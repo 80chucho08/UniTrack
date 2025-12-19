@@ -14,7 +14,7 @@ const pool = mysql.createPool({
 const testConnection = async () => {
     try {
         const [rows] = await pool.query("SELECT 1 + 1 AS RESULT");
-        console.log("Conexion creada", rows);
+        console.log("Conexion con BD creada", rows);
     }catch (error){
         console.log("error al conectar bd", error);
     }
