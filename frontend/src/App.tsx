@@ -1,13 +1,8 @@
-
+import Login from "./pages/Login";
 
 
 function App() {
-  
-  return (
-    <>
-      <h1 className="text-3xl font-bold text-blue-600">UniTrack</h1>
-    </>
-  )
+  return <Login />
 }
 
 export default App
