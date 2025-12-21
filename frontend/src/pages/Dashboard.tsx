@@ -1,72 +1,33 @@
-import { useEffect, useState } from "react";
-
-interface User {
-  id: number;
-  name: string;
-  email: string;
-}
+import { useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 function Dashboard() {
-  const [user, setUser] = useState<User | null>(null);
-  const [error, setError] = useState("");
+  const { user, logout } = useContext(AuthContext);
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      const token = localStorage.getItem("token");
-
-      if (!token) {
-        setError("No autenticado");
-        return;
-      }
-
-      try {
-        const response = await fetch(
-          "http://localhost:3000/api/users/me",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error("Error de autenticación");
-        }
-
-        const data = await response.json();
-        setUser(data);
-
-      } catch (err) {
-        setError("Sesión inválida");
-      }
-    };
-
-    fetchProfile();
-  }, []);
-
-  if (error) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-red-600">{error}</p>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p>Cargando...</p>
-      </div>
-    );
-  }
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      <div className="bg-white p-6 rounded-xl shadow-md max-w-lg mx-auto">
-        <h1 className="text-2xl font-bold mb-2">
-          Bienvenido, {user.name}
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+      <div className="bg-white p-6 rounded-xl shadow-md w-full max-w-md">
+        <h1 className="text-2xl font-bold mb-4">
+          Bienvenido, {user?.name}
         </h1>
-        <p className="text-gray-600">{user.email}</p>
+
+        <p className="text-gray-600 mb-6">
+          Email: <span className="font-medium">{user?.email}</span>
+        </p>
+
+        <button
+          onClick={handleLogout}
+          className="w-full bg-red-600 text-white py-2 rounded-md hover:bg-red-700 transition"
+        >
+          Cerrar sesión
+        </button>
       </div>
     </div>
   );
