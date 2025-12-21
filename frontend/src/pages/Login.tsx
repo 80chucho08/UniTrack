@@ -40,6 +40,7 @@ function Login(){
             localStorage.setItem("user", JSON.stringify(data.user));
 
             console.log("Login exitoso", data);
+            window.location.href = "/dashboard";
 
         }catch (err) {
             setError("Email o contaseña incorrectos");
