@@ -1,32 +1,36 @@
 import { createContext, useState, type ReactNode, useEffect } from "react";
 
+
 export interface User {
-  id: number;
-  name: string;
+    id: number;
+    name: string;
   email: string;
 }
 
 interface AuthContextType {
-  user: User | null;
-  token: string | null;
-  login: (token: string, user: User) => void;
-  logout: () => void;
-  isAuthenticated: boolean;
+    user: User | null;
+    token: string | null;
+    login: (token: string, user: User) => void;
+    logout: () => void;
+    isAuthenticated: boolean;
+    loading: boolean;
 }
 
 export const AuthContext = createContext<AuthContextType>(
-  {} as AuthContextType
+    {} as AuthContextType
 );
 
 interface Props {
-  children: ReactNode;
+    children: ReactNode;
 }
 
 export const AuthProvider = ({ children }: Props) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
-
-  useEffect(() => {
+    const [user, setUser] = useState<User | null>(null);
+    const [token, setToken] = useState<string | null>(null);
+    
+    const [loading, setLoading] = useState(true);
+  
+    useEffect(() => {
     const storedToken = localStorage.getItem("token");
     const storedUser = localStorage.getItem("user");
 
@@ -34,6 +38,8 @@ export const AuthProvider = ({ children }: Props) => {
       setToken(storedToken);
       setUser(JSON.parse(storedUser));
     }
+
+    setLoading(false);
   }, []);
 
   const login = (token: string, user: User) => {
@@ -58,6 +64,7 @@ export const AuthProvider = ({ children }: Props) => {
         login,
         logout,
         isAuthenticated: !!token,
+        loading,
       }}
     >
       {children}

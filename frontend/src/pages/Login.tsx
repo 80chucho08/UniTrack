@@ -1,4 +1,8 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
+
 
 interface LoginResponse {
     token: string;
@@ -15,6 +19,10 @@ function Login(){
     const [error, setError] = useState("");
     const [loading, setLoading] =  useState(false);
     
+    const { login } = useContext(AuthContext);
+    const navigate = useNavigate();
+
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError("");
@@ -36,11 +44,10 @@ function Login(){
             const data: LoginResponse = await response.json();
 
             //guardar token en localstorage
-            localStorage.setItem("token", data.token);
-            localStorage.setItem("user", JSON.stringify(data.user));
-
+            login(data.token, data.user);
             console.log("Login exitoso", data);
-            window.location.href = "/dashboard";
+            navigate("/");
+
 
         }catch (err) {
             setError("Email o contaseña incorrectos");
