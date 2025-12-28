@@ -1,11 +1,10 @@
-import { useContext, useState } from "react";
-import { AuthContext } from "../context/AuthContext";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { SemesterCard } from "../components/SemesterCard";
 import { AddSemesterCard } from "../components/AddSemesterCard";
+import { Sidebar } from "../components/Sidebar";
 
 function Dashboard() {
-  const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const [semesters, setSemesters] = useState([
@@ -19,11 +18,6 @@ function Dashboard() {
       name
     };
     setSemesters((prev) => [...prev, newSemester]);
-  };
-
-  const handleLogout = () => {
-    logout();
-    navigate("/login");
   };
 
   return (
@@ -65,27 +59,8 @@ function Dashboard() {
           </div>
         </main>
 
-        {/* User info / sidebar */}
-        <aside className="bg-white p-6 rounded-xl shadow-md h-fit">
-          <h2 className="text-xl font-bold mb-2">
-            Bienvenido
-          </h2>
-
-          <p className="text-gray-800 font-medium">
-            {user?.name}
-          </p>
-
-          <p className="text-gray-500 text-sm mb-6">
-            {user?.email}
-          </p>
-
-          <button
-            onClick={handleLogout}
-            className="w-full bg-red-600 text-white py-2 rounded-md hover:bg-red-700 transition"
-          >
-            Cerrar sesión
-          </button>
-        </aside>
+        {/* Sidebar */}
+        <Sidebar />
 
       </div>
     </div>
@@ -93,3 +68,4 @@ function Dashboard() {
 }
 
 export default Dashboard;
+
