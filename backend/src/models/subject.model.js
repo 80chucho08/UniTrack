@@ -9,7 +9,12 @@ const getSubjects = async(id, semesterId) => {
 }
 
 
-const addSubject = async() => {
+const addSubject = async(userId, semesterId, subjectId) => {
+    const query = (``);
+
+    const [result] = await pool.execute(query, []);
+    
+    return result.insertId;
 
 }
 
