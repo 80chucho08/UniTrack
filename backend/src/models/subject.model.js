@@ -6,5 +6,7 @@ const getSubjects = async(id, semesterId) => {
 
 
 const addSubject = async() => {
-    
+
 }
+
+module.exports = { getSubjects, addSubject };
