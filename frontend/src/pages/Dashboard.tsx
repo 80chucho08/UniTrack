@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext, use } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { SemesterCard } from "../components/SemesterCard";
 import { AddSemesterCard } from "../components/AddSemesterCard";
