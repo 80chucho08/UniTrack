@@ -1,29 +1,52 @@
-import { useContext, useState } from "react";
-import { AuthContext } from "../context/AuthContext";
+import { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { SemesterCard } from "../components/SemesterCard";
 import { AddSemesterCard } from "../components/AddSemesterCard";
+import { Sidebar } from "../components/Sidebar";
+import { AuthContext } from "../context/AuthContext";
+import {
+  getSemesters,
+  createSemester,
+  type Semester,
+} from "../services/semesterService";
 
 function Dashboard() {
-  const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
+  const { token } = useContext(AuthContext);
 
-  const [semesters, setSemesters] = useState([
-    { id: 1, name: "1er Semestre" },
-    { id: 2, name: "2do Semestre" }
-  ]);
+  const [semesters, setSemesters] = useState<Semester[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleAddSemester = (name: string) => {
-    const newSemester = {
-      id: Date.now(),
-      name
+  useEffect(() => {
+    const fetchSemesters = async () => {
+      try {
+        if (!token) return;
+        const data = await getSemesters(token);
+        setSemesters(data);
+      } catch (error) {
+        console.error("Error al obtener semestres: ", error);
+      } finally {
+        setLoading(false);
+      }
     };
-    setSemesters((prev) => [...prev, newSemester]);
-  };
+    fetchSemesters();
+  }, [token]);
 
-  const handleLogout = () => {
-    logout();
-    navigate("/login");
+  const handleAddSemester = async (name: string) => {
+    try {
+      if (!token) return;
+
+      const response = await createSemester(name, token);
+
+      const newSemester = {
+        id: response.semesterId,
+        name
+      };
+
+      setSemesters((prev) => [...prev, newSemester]);
+    } catch (error) {
+      console.error("Error al crear semestre: ", error);
+    }
   };
 
   return (
@@ -44,7 +67,13 @@ function Dashboard() {
 
         {/* Semesters section */}
         <main className="lg:col-span-3">
-          {semesters.length === 0 && (
+          {loading && (
+            <p className="text-gray-500">
+              Cargando Semestres...
+            </p>
+          )}
+
+          {!loading && semesters.length === 0 && (
             <p className="text-gray-500 mb-4">
               Aún no tienes semestres registrados.
             </p>
@@ -65,27 +94,8 @@ function Dashboard() {
           </div>
         </main>
 
-        {/* User info / sidebar */}
-        <aside className="bg-white p-6 rounded-xl shadow-md h-fit">
-          <h2 className="text-xl font-bold mb-2">
-            Bienvenido
-          </h2>
-
-          <p className="text-gray-800 font-medium">
-            {user?.name}
-          </p>
-
-          <p className="text-gray-500 text-sm mb-6">
-            {user?.email}
-          </p>
-
-          <button
-            onClick={handleLogout}
-            className="w-full bg-red-600 text-white py-2 rounded-md hover:bg-red-700 transition"
-          >
-            Cerrar sesión
-          </button>
-        </aside>
+        {/* Sidebar */}
+        <Sidebar />
 
       </div>
     </div>
@@ -93,3 +103,4 @@ function Dashboard() {
 }
 
 export default Dashboard;
+
