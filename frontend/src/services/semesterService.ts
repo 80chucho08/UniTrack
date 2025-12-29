@@ -19,12 +19,18 @@ export async function getSemesters(tokke: string): Promise<Semester[]> {
     return res.json();
 }
 
+export interface CreateSemesterResponse {
+  semesterId: number;
+  message: string;
+}
+
+
 export async function createSemester(
     name: string,
     token: string
-): Promise<Semester> {
+): Promise<CreateSemesterResponse> {
     const res = await fetch(API_URL, {
-        method: 'POST',
+        method: "POST",
         headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`
@@ -32,8 +38,9 @@ export async function createSemester(
         body: JSON.stringify({ name })
     });
 
-    if (!res.ok){
-        throw new Error('Error al crear el semestre');
+    if (!res.ok) {
+        throw new Error("Error al crear el semestre");
     }
+
     return res.json();
 }
