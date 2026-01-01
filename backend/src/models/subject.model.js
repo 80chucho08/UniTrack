@@ -1,7 +1,12 @@
 const { pool } = require("../config/db");
 
 const getSubjects = async(id, semesterId) => {
-    const query = (``);
+    const query = (`SELECT Sb.id, Sb.user_id, Sb.semester_id, Sb.name
+                    FROM user U 
+                    JOIN semesters S
+                        ON U.id = S.user_id
+                    JOIN subjects Sb
+                     ON S.user_id =  Sb.user_id`);
 
     const [rows] = await pool.execute(query, [id, semesterId]);
 
