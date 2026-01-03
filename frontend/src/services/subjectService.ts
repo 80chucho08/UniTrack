@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:3000/api/semesters';
+const API_URL = 'http://localhost:3000/api';
 
 export interface Subject {
     id: number;
@@ -9,7 +9,7 @@ export interface Subject {
     teacher_email?: string | null;
     cerdits?: number | null;
     color?: string | null;
-    evaluation_percentage?: number | null;
+    evaluation_criteria?: number | null;
 }
 
 export interface CreateSubjectResponse {
@@ -44,7 +44,7 @@ export async function createSubject(
         teacher_email?: string;
         credits?: number;
         color?: string;
-        evaluation_creiteria?: string;
+        evaluation_criteria?: string;
     },
     token: string
 ): Promise<CreateSubjectResponse> {
