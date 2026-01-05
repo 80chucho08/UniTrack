@@ -15,28 +15,34 @@ function SemesterDashboard() {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
 
+    const fetchSubjects = async () => {
+        try {
+            if (!token || !semesterId) return;
+            const data = await getSubjects(Number(semesterId), token);
+            setSubjects(data);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
-        const fetchSubjects = async () => {
-            try {
-                if (!token || !semesterId) return;
-                const data = await getSubjects(Number(semesterId), token);
-                setSubjects(data);
-            } catch (error) { console.error(error); } 
-            finally { setLoading(false); }
-        };
         fetchSubjects();
     }, [semesterId, token]);
 
     return (
         <div className="min-h-screen bg-slate-50 p-6 lg:p-10">
             <div className="max-w-7xl mx-auto">
-                
-                <DashboardHeader 
-                    title="Materias del Semestre" 
+
+                <DashboardHeader
+                    title="Materias del Semestre"
                     subtitle={`Periodo académico activo`}
                 >
-                    <button className="bg-indigo-600 text-white px-4 py-2 rounded-lg font-medium">
-                        + Materia
+                    <button
+                        onClick={() => setIsModalOpen(true)}
+                        className="bg-indigo-600 text-white px-4 py-2 rounded-lg font-medium">
+                        <span className="text-xl">+</span> Materia
                     </button>
                 </DashboardHeader>
 
@@ -56,9 +62,14 @@ function SemesterDashboard() {
                     <p className="text-center text-gray-500 mt-10">No hay materias.</p>
                 )}
             </div>
-            <button onClick={() => setIsModalOpen(true)}>
-                modal
-            </button>
+            {/* Renderizado condicional del Modal */}
+            {isModalOpen && (
+                <CreateSubjectModal
+                    semesterId={Number(semesterId)}
+                    onClose={() => setIsModalOpen(false)}
+                    onCreated={fetchSubjects} // Refresca la lista
+                />
+            )}
 
         </div>
     );
