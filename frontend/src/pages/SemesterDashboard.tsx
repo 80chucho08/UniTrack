@@ -4,12 +4,16 @@ import { AuthContext } from '../context/AuthContext';
 import { getSubjects, type Subject } from '../services/subjectService';
 import { SubjectCard } from '../components/SubjectCard';
 import { DashboardHeader } from '../components/DashboardHeader';
+import { CreateSubjectModal } from "../components/CreateSubjectModal";
+
 
 function SemesterDashboard() {
     const { semesterId } = useParams();
     const { token } = useContext(AuthContext);
     const [subjects, setSubjects] = useState<Subject[]>([]);
     const [loading, setLoading] = useState(true);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
 
     useEffect(() => {
         const fetchSubjects = async () => {
@@ -52,6 +56,10 @@ function SemesterDashboard() {
                     <p className="text-center text-gray-500 mt-10">No hay materias.</p>
                 )}
             </div>
+            <button onClick={() => setIsModalOpen(true)}>
+                modal
+            </button>
+
         </div>
     );
 }
