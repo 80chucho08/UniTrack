@@ -5,7 +5,8 @@ const getSubjects = async (userId, semesterId) => {
             Sb.id, 
             Sb.user_id, 
             Sb.semester_id, 
-            Sb.name
+            Sb.name,
+            Sb.color
         FROM subjects Sb
         INNER JOIN semesters S ON Sb.semester_id = S.id
         WHERE Sb.user_id = ? AND Sb.semester_id = ?`;

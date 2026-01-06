@@ -3,6 +3,7 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import PrivateRoute from "./routes/PrivateRoute";
 import Register from "./pages/Register";
+import SemesterDashboard from "./pages/SemesterDashboard";
 
 function App() {
   return (
@@ -14,10 +15,13 @@ function App() {
         {/* Rutas protegidas */}
         <Route element={<PrivateRoute />}>
           <Route path="/" element={<Dashboard />} />
+          <Route path="/dashboard/semester/:semesterId"
+            element={<SemesterDashboard />}
+          />
         </Route>
       </Routes>
     </BrowserRouter>
   );
 }
 
-export default App
+export default App;
