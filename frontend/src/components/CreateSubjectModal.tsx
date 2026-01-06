@@ -8,8 +8,6 @@ interface Props {
     onCreated: () => void;
 }
 
-// ... (imports)
-
 export function CreateSubjectModal({ semesterId, onClose, onCreated }: Props) {
     const { token } = useContext(AuthContext);
     const [name, setName] = useState("");
