@@ -50,27 +50,27 @@ function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
+    <div className="flex min-h-screen bg-gray-100">
+      {/* Sidebar */}
+      <Sidebar />
 
-      {/* Header */}
-      <header className="mb-8">
-        <h1 className="text-4xl font-extrabold text-gray-900">
-          Mis Semestres
-        </h1>
-        <p className="text-gray-500 mt-1">
-          Gestiona tus periodos académicos en UniTrack
-        </p>
-      </header>
+      {/* Contenedor Principal */}
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        
+        {/* Header */}
+        <header className="p-8 pb-0"> {/* Añadí padding para que alinee con el main */}
+          <h1 className="text-4xl font-extrabold text-gray-900">
+            Mis Semestres
+          </h1>
+          <p className="text-gray-500 mt-1">
+            Gestiona tus periodos académicos en UniTrack
+          </p>
+        </header>
 
-      {/* Main layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-
-        {/* Semesters section */}
-        <main className="lg:col-span-3">
+        {/* Main section */}
+        <main className="p-8">
           {loading && (
-            <p className="text-gray-500">
-              Cargando Semestres...
-            </p>
+            <p className="text-gray-500">Cargando Semestres...</p>
           )}
 
           {!loading && semesters.length === 0 && (
@@ -79,24 +79,17 @@ function Dashboard() {
             </p>
           )}
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {semesters.map((semester) => (
               <SemesterCard
                 key={semester.id}
                 name={semester.name}
-                onClick={() =>
-                  navigate(`/dashboard/semester/${semester.id}`)
-                }
+                onClick={() => navigate(`/dashboard/semester/${semester.id}`)}
               />
             ))}
-
             <AddSemesterCard onAdd={handleAddSemester} />
           </div>
         </main>
-
-        {/* Sidebar */}
-        <Sidebar />
-
       </div>
     </div>
   );
