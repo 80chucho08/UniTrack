@@ -1,34 +1,75 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
 
+export function Sidebar() {
+  const { user, logout } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const location = useLocation();
 
-export function Sidebar () {
-    const { user, logout } = useContext(AuthContext);
-    const navigate = useNavigate();
+  const [collapsed, setCollapsed] = useState(false);
 
-    const handleLogout = () => {
-        logout();
-        navigate("/login");
-    };
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
 
-    return (
-        <aside className="bg-white p-6 rounded-xl shadow-md h-fit">
-            <h2 className="text-xl font-bold mb-2">
-                Bienvenido
-            </h2>
-            <p className="text-gray-500 text-sm mb-6">
-                {user?.name}
-            </p>
-            <p className="text-gray-500 text-sm mb-6">
-                {user?.email}
-            </p>
+  return (
+    <aside
+      className={`h-screen bg-white border-r shadow-sm transition-all duration-300
+        ${collapsed ? "w-16" : "w-64"}
+      `}
+    >
+      <div className="flex flex-col h-full p-4">
 
-            <button 
-                onClick={handleLogout}
-                className="w-full bg-red-600 text-white py-2 rounded-md hover:bg-red-700 transition">
-                Cerrar sesión
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6">
+          {!collapsed && (
+            <h2 className="text-lg font-bold">UniTrack</h2>
+          )}
+          <button
+            onClick={() => setCollapsed(!collapsed)}
+            className="text-gray-500 hover:text-gray-800"
+          >
+            ☰
+          </button>
+        </div>
+
+        {/* User info */}
+        {!collapsed && (
+          <div className="mb-6">
+            <p className="text-sm font-semibold">{user?.name}</p>
+            <p className="text-xs text-gray-500">{user?.email}</p>
+          </div>
+        )}
+
+        {/* Navigation */}
+        <nav className="flex flex-col gap-2 flex-grow">
+          <button
+            onClick={() => navigate("/")}
+            className="text-left px-3 py-2 rounded hover:bg-gray-100"
+          >
+            🏠 {!collapsed && "Inicio"}
+          </button>
+
+          {location.pathname !== "/dashboard" && (
+            <button
+              onClick={() => navigate(-1)}
+              className="text-left px-3 py-2 rounded hover:bg-gray-100"
+            >
+              🔙 {!collapsed && "Regresar"}
             </button>
-        </aside>
-    );
+          )}
+        </nav>
+
+        {/* Logout */}
+        <button
+          onClick={handleLogout}
+          className="mt-auto bg-red-500 text-white py-2 rounded hover:bg-red-600 transition"
+        >
+          {!collapsed ? "Cerrar sesión" : "⏻"}
+        </button>
+      </div>
+    </aside>
+  );
 }
