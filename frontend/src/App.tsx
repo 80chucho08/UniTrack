@@ -1,9 +1,10 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
-import Dashboard from "./pages/Dashboard";
-import PrivateRoute from "./routes/PrivateRoute";
 import Register from "./pages/Register";
+import Dashboard from "./pages/Dashboard";
 import SemesterDashboard from "./pages/SemesterDashboard";
+import PrivateRoute from "./routes/PrivateRoute";
+import DashboardLayout from "./layouts/DashboardLayout";
 
 function App() {
   return (
@@ -12,12 +13,19 @@ function App() {
         {/* Rutas públicas */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+
+        {/* Redirección raíz */}
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+
         {/* Rutas protegidas */}
         <Route element={<PrivateRoute />}>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/dashboard/semester/:semesterId"
-            element={<SemesterDashboard />}
-          />
+          <Route path="/dashboard" element={<DashboardLayout />}>
+            <Route index element={<Dashboard />} />
+            <Route
+              path="semester/:semesterId"
+              element={<SemesterDashboard />}
+            />
+          </Route>
         </Route>
       </Routes>
     </BrowserRouter>
