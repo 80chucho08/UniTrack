@@ -56,7 +56,7 @@ export function Sidebar() {
                     <button
                         onClick={() => navigate("/")}
                         className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors
-                            ${location.pathname === "/" ? "bg-blue-50 text-blue-600" : "text-gray-600 hover:bg-gray-100"}
+                            ${location.pathname === "/dashboard" ? "bg-blue-50 text-blue-600" : "text-gray-600 hover:bg-gray-100"}
                         `}
                     >
                         <Home size={20} />
