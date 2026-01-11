@@ -5,7 +5,8 @@ import {
     Home,
     ChevronLeft,
     Menu,
-    LogOut
+    LogOut,
+    Calendar
 } from "lucide-react";
 
 export function Sidebar() {
@@ -74,10 +75,10 @@ export function Sidebar() {
                     )}
 
                     <button
-                        onClick={() => navigate("/Schedule")}
+                        onClick={() => navigate("/dashboard/schedule")}
                         className={`flex items-center gap-3 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors`}
                         >
-                        <ChevronLeft size={20} />
+                        <Calendar size={20} />
                         {!collapsed && <span className="text-sm font-medium">Horario</span>}
                     </button>
                 </nav>
