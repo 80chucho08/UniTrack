@@ -32,8 +32,8 @@ function SemesterDashboard() {
     }, [semesterId, token]);
 
     return (
-        <div className="min-h-screen bg-slate-50 p-6 lg:p-10">
-            <div className="max-w-7xl mx-auto">
+        <>
+            <main className="p-6 lg:p-10 max-w-7xl w-full mx-auto">
 
                 <DashboardHeader
                     title="Materias del Semestre"
@@ -61,7 +61,8 @@ function SemesterDashboard() {
                 {!loading && subjects.length === 0 && (
                     <p className="text-center text-gray-500 mt-10">No hay materias.</p>
                 )}
-            </div>
+            </main>
+
             {/* Renderizado condicional del Modal */}
             {isModalOpen && (
                 <CreateSubjectModal
@@ -71,7 +72,7 @@ function SemesterDashboard() {
                 />
             )}
 
-        </div>
+        </>
     );
 }
 export default SemesterDashboard;

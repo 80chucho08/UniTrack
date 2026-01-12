@@ -2,7 +2,6 @@ import { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { SemesterCard } from "../components/SemesterCard";
 import { AddSemesterCard } from "../components/AddSemesterCard";
-import { Sidebar } from "../components/Sidebar";
 import { AuthContext } from "../context/AuthContext";
 import {
   getSemesters,
@@ -50,48 +49,42 @@ function Dashboard() {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
-      {/* Sidebar */}
-      <Sidebar />
 
-      {/* Contenedor Principal */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        
-        {/* Header */}
-        <header className="p-8 pb-0"> {/* Añadí padding para que alinee con el main */}
-          <h1 className="text-4xl font-extrabold text-gray-900">
-            Mis Semestres
-          </h1>
-          <p className="text-gray-500 mt-1">
-            Gestiona tus periodos académicos en UniTrack
+    <>
+      {/* Header */}
+      <header className="p-8 pb-0"> {/* Añadí padding para que alinee con el main */}
+        <h1 className="text-4xl font-extrabold text-gray-900">
+          Mis Semestres
+        </h1>
+        <p className="text-gray-500 mt-1">
+          Gestiona tus periodos académicos en UniTrack
+        </p>
+      </header>
+
+      {/* Main section */}
+      <main className="p-8">
+        {loading && (
+          <p className="text-gray-500">Cargando Semestres...</p>
+        )}
+
+        {!loading && semesters.length === 0 && (
+          <p className="text-gray-500 mb-4">
+            Aún no tienes semestres registrados.
           </p>
-        </header>
+        )}
 
-        {/* Main section */}
-        <main className="p-8">
-          {loading && (
-            <p className="text-gray-500">Cargando Semestres...</p>
-          )}
-
-          {!loading && semesters.length === 0 && (
-            <p className="text-gray-500 mb-4">
-              Aún no tienes semestres registrados.
-            </p>
-          )}
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {semesters.map((semester) => (
-              <SemesterCard
-                key={semester.id}
-                name={semester.name}
-                onClick={() => navigate(`/dashboard/semester/${semester.id}`)}
-              />
-            ))}
-            <AddSemesterCard onAdd={handleAddSemester} />
-          </div>
-        </main>
-      </div>
-    </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {semesters.map((semester) => (
+            <SemesterCard
+              key={semester.id}
+              name={semester.name}
+              onClick={() => navigate(`/dashboard/semester/${semester.id}`)}
+            />
+          ))}
+          <AddSemesterCard onAdd={handleAddSemester} />
+        </div>
+      </main>
+    </>
   );
 }
 
