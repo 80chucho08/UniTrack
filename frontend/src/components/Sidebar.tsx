@@ -23,7 +23,7 @@ export function Sidebar() {
 
     return (
         <aside
-            className={`h-screen bg-white-500 border-r shadow-sm transition-all duration-300 flex-shrink-0
+            className={`h-screen bg-white-500 border-r shadow-sm transition-all duration-300 flex-shrink-0 sticky top-0 overflow-y-auto
         ${collapsed ? "w-16" : "w-64"}
       `}
         >
