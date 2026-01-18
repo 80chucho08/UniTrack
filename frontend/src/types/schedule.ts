@@ -1,9 +1,11 @@
 export interface Materia {
-    id: string;
+    id: number;
     name: string;
     color: string;
 }
 
-export interface HorarioState {
-    [celdaId: string]: Materia;
+export interface HorarioRegistro {
+    subject_id: number;
+    day: string;
+    hour: number;
 }

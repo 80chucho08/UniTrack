@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { Materia, HorarioState } from "../types/schedule";
+import type { Materia, HorarioRegistro } from "../types/schedule";
 import ScheduleGrid from '../components/schedule/ScheduleGrid';
 import SchedulePanel from '../components/schedule/SchedulePanel';
 import ScheduleSelect from "../components/schedule/ScheduleSelect";
