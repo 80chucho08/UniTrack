@@ -22,8 +22,10 @@ const ScheduleGrid = ({ asignaciones, setAsignaciones }: Props) => {
 
         const nuevaAsignacion: HorarioRegistro = {
             subject_id: materiaId,
+            subject_name: e.dataTransfer.getData("materiaNombre"),
             day,
-            hour
+            hour,
+            color: e.dataTransfer.getData("materiaColor"),
         };
 
         setAsignaciones([...asignaciones, nuevaAsignacion]);
