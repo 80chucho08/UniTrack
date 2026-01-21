@@ -5,6 +5,7 @@ import SchedulePanel from '../components/schedule/SchedulePanel';
 import ScheduleSelect from "../components/schedule/ScheduleSelect";
 
 const Schedule = () => {
+    const [asignaciones, setAsignaciones] = useState<HorarioRegistro[]>([]);
     const [selectedSemester, setSelectedSemester] = useState(1);
     return (
         <div className="p-6 max-w-7xl mx-auto space-y-6 bg-slate-50 min-h-screen">
@@ -18,7 +19,7 @@ const Schedule = () => {
 
             <div className="grid grid-cols-1 gap-6">
                 <SchedulePanel semester={selectedSemester} />
-                <ScheduleGrid />
+                <ScheduleGrid asignaciones={asignaciones} setAsignaciones={setAsignaciones}/>
             </div>
         </div>
     );
