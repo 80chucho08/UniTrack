@@ -1,11 +1,11 @@
 import type { Materia } from "../../types/schedule";
+import type { Semester } from "../../services/semesterService";
 import { useEffect, useState } from "react";
 import { getMateriasBySemester } from "../../services/scheduleService";
 
 interface Props {
-    semester: number;
+    semester: Semester;
 }
-const semesterId = 2;
 
 const SchedulePanel = ({ semester }: Props) => {
     const [materias, setMaterias] = useState<Materia[]>([]);
@@ -15,7 +15,7 @@ const SchedulePanel = ({ semester }: Props) => {
         const fetchMaterias = async () => {
             try {
                 setLoading(true);
-                const data = await getMateriasBySemester(semesterId);
+                const data = await getMateriasBySemester(semester.id);
                 setMaterias(data);
             } catch (error) {
                 console.error("Error al cargar materias", error);
@@ -25,7 +25,7 @@ const SchedulePanel = ({ semester }: Props) => {
         };
 
         fetchMaterias();
-    }, [semester]);
+    }, [semester.id]);
 
     const handleDragStart = (
         e: React.DragEvent,
@@ -37,7 +37,7 @@ const SchedulePanel = ({ semester }: Props) => {
     };
     return (
         <div className="bg-slate-50 p-4 rounded-xl border-2 border-dashed border-slate-300">
-            <h3 className="text-sm font-medium text-slate-500 mb-3 uppercase tracking-wider">Materias Semestre {semester}</h3>
+            <h3 className="text-sm font-medium text-slate-500 mb-3 uppercase tracking-wider">Materias {semester.name}</h3>
 
             {loading && (
                 <p className="text-sm text-slate-400">Cargando materias...</p>
