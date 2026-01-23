@@ -16,5 +16,12 @@ const getSubjectsBySemester = async (userId, semesterId) => {
     return rows;
 }
 
+const saveScheduleSubject = async () => {
+    const query = ``;
+    
+}
+
+ 
+
 
 module.exports = { getSubjectsBySemester };
