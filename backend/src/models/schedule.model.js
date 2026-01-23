@@ -21,6 +21,10 @@ const saveScheduleSubject = async () => {
     
 }
 
+const deleteScheduleSubject = async () => {
+    const query = ``;
+}
+
 const getScheduleSubjects = async () => {
     const query = ``;
 }
