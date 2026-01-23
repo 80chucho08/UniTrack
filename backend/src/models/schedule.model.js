@@ -21,7 +21,9 @@ const saveScheduleSubject = async () => {
     
 }
 
- 
+const getScheduleSubjects = async () => {
+    const query = ``;
+}
 
 
 module.exports = { getSubjectsBySemester };
