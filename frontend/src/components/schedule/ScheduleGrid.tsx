@@ -79,10 +79,11 @@ const ScheduleGrid = ({ asignaciones, setAsignaciones }: Props) => {
                                     {asignada && (
                                         <div
                                             onClick={() => removeAsignacion(day, hour)}
-                                            className="absolute inset-1 bg-blue-500 text-white text-[10px] p-1 rounded shadow-sm flex items-center justify-center text-center cursor-pointer hover:bg-red-500 transition-colors"
+                                            className="absolute inset-1 bg-blue-500 text-white text-[10px] p-1 rounded shadow-sm flex items-center justify-center text-center cursor-pointer hover:bg-red-500 transition-colors font-bold [text-shadow:_0.5px_0.5px_0_#000,_-0.5px_-0.5px_0_#000,_0.5px_-0.5px_0_#000,_-0.5px_0.5px_0_#000]"
+                                            style={{ backgroundColor: asignada.color }}
                                             title="Click para eliminar"
                                         >
-                                            Materia {asignada.subject_id}
+                                            {asignada.subject_name}
                                         </div>
                                     )}
                                 </div>
