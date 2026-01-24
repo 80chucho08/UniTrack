@@ -16,9 +16,21 @@ const getSubjectsBySemester = async (userId, semesterId) => {
     return rows;
 }
 
-const saveScheduleSubject = async () => {
-    const query = ``;
+const saveScheduleSubject = async (scheduleData) => {
+    const { user_id, subject_id, day, start_time, end_time, classroom } = scheduleData;
+    const query = `INSERT INTO schedule (user_id, subject_id, day, start_time, end_time, classroom)
+        VALUES (?, ?, ?, ?, ?, ?)`;
     
+    const [result] = await pool.execute(query, [
+        user_id, 
+        subject_id, 
+        day, 
+        start_time, 
+        end_time, 
+        classroom
+    ]);
+
+    return result;
 }
 
 const deleteScheduleSubject = async () => {
