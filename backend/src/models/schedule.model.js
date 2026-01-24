@@ -33,8 +33,10 @@ const saveScheduleSubject = async (scheduleData) => {
     return result;
 }
 
-const deleteScheduleSubject = async () => {
-    const query = ``;
+const deleteScheduleSubject = async (userId, scheduleId) => {
+    const query = `DELETE FROM schedule WHERE id = ? AND user_id = ?`;
+    const [result] = await pool.execute(query, [scheduleId, userId]);
+    return result;
 }
 
 const getScheduleSubjects = async () => {
