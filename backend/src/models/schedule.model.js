@@ -40,7 +40,22 @@ const deleteScheduleSubject = async (userId, scheduleId) => {
 }
 
 const getScheduleSubjects = async () => {
-    const query = ``;
+    const query = `
+        SELECT 
+            sch.id as schedule_id,
+            sch.day,
+            sch.start_time,
+            sch.end_time,
+            sch.classroom,
+            sub.name as subject_name,
+            sub.color as subject_color,
+            sub.id as subject_id
+        FROM schedule sch
+        INNER JOIN subjects sub ON sch.subject_id = sub.id
+        WHERE sch.user_id = ?
+    `;
+    const [rows] = await pool.execute(query, [userId]);
+    return rows;
 }
 
 
