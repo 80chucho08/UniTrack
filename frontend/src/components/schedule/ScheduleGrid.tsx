@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import type { Materia, HorarioRegistro } from '../../types/schedule';
+import React from 'react';
+import type { HorarioRegistro } from '../../types/schedule';
 
 const HOURS = Array.from({ length: 15 }, (_, i) => i + 7); // 7 AM to 9 PM
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
