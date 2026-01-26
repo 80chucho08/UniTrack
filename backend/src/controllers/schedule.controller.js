@@ -17,7 +17,7 @@ const getSubjectsBySemester = async (req, res) => {
         console.error("Error detallado:", error);
         res.status(500).json({
             message: "Error al obtener materias",
-            error: error.message // Esto te ayudará a ver el problema en Thunder Client
+            error: error.message //ver problema en Thunder Client
         });
     }
 }
