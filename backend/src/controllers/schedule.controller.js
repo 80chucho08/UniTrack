@@ -14,7 +14,7 @@ const getSubjectsBySemester = async (req, res) => {
         const subjects = await scheduleModel.getSubjectsBySemester(userId, semesterId);
         res.json(subjects);
     } catch (error) {
-        console.error("Error detallado:", error); // Esto aparecerá en tu terminal/VS Code
+        console.error("Error detallado:", error);
         res.status(500).json({
             message: "Error al obtener materias",
             error: error.message // Esto te ayudará a ver el problema en Thunder Client
