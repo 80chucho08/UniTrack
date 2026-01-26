@@ -59,4 +59,4 @@ const getScheduleSubjects = async () => {
 }
 
 
-module.exports = { getSubjectsBySemester };
+module.exports = { getSubjectsBySemester, saveScheduleSubject, deleteScheduleSubject, getScheduleSubjects };
