@@ -22,4 +22,35 @@ const getSubjectsBySemester = async (req, res) => {
     }
 }
 
+
+// Guardar una materia en el grid (al soltar/asignar en el frontend)
+const saveScheduleSubject = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const { subject_id, day, start_time, end_time, classroom } = req.body;
+
+        // Validación básica
+        if (!subject_id || !day || !start_time) {
+            return res.status(400).json({ message: "Faltan datos obligatorios para el horario" });
+        }
+
+        const result = await scheduleModel.saveScheduleSubject({
+            user_id: userId,
+            subject_id,
+            day,
+            start_time,
+            end_time,
+            classroom
+        });
+
+        res.status(201).json({
+            message: "Materia asignada al horario con éxito",
+            insertedId: result.insertId
+        });
+    } catch (error) {
+        console.error("Error al guardar en horario:", error);
+        res.status(500).json({ message: "Error al guardar la materia", error: error.message });
+    }
+}
+
 module.exports = { getSubjectsBySemester };
