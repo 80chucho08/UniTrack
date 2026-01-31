@@ -6,6 +6,7 @@ import SchedulePanel from '../components/schedule/SchedulePanel';
 import ScheduleSelect from "../components/schedule/ScheduleSelect";
 import { getSemesters } from "../services/semesterService";
 import { AuthContext } from "../context/AuthContext";
+import { getFullSchedule } from "../services/scheduleService";
 
 const Schedule = () => {
     const [asignaciones, setAsignaciones] = useState<HorarioRegistro[]>([]);
@@ -28,6 +29,33 @@ const Schedule = () => {
             }
         }
         fetchSemesters();
+    }, [token]);
+
+    // 2. Cargar el Horario Guardado (NUEVO)
+    useEffect(() => {
+        const loadSavedSchedule = async () => {
+            if (!token) return;
+            try {
+                const data = await getFullSchedule(token);
+
+                // Mapeamos los datos del backend al formato que usa tu Grid
+                const mapeado: HorarioRegistro[] = data.map((item: any) => ({
+                    id: item.schedule_id, // Usamos el ID de la tabla schedule
+                    subject_id: item.subject_id,
+                    subject_name: item.subject_name,
+                    color: item.subject_color,
+                    day: item.day,
+                    // Extraemos la hora (ej: "07:00:00" -> 7)
+                    hour: parseInt(item.start_time.split(':')[0])
+                }));
+
+                setAsignaciones(mapeado);
+            } catch (error) {
+                console.error("Error al cargar el horario guardado", error);
+            }
+        };
+
+        loadSavedSchedule();
     }, [token]);
 
     const selectedSemesterData = semesters.find(s => s.id === selectedSemester);
