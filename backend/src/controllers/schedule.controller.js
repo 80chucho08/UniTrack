@@ -53,4 +53,14 @@ const saveScheduleSubject = async (req, res) => {
     }
 }
 
+const getSchedule = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const schedule = await scheduleModel.getScheduleSubjects(userId);
+        res.json(schedule);
+    } catch (error) {
+        res.status(500).json({ message: "Error al obtener el horario", error: error.message });
+    }
+}
+
 module.exports = { getSubjectsBySemester };
