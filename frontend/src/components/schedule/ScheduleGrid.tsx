@@ -1,38 +1,67 @@
-import React, { useState } from 'react';
-import type { Materia, HorarioRegistro } from '../../types/schedule';
+import React from 'react';
+import type { HorarioRegistro } from '../../types/schedule';
+import { saveToSchedule, deleteFromSchedule } from '../../services//scheduleService';
 
 const HOURS = Array.from({ length: 15 }, (_, i) => i + 7); // 7 AM to 9 PM
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 
-
-const ScheduleGrid = () => {
-    const [asignaciones, setAsignaciones] = useState<HorarioRegistro[]>([]);
-
-    const handleDrop = (e: React.DragEvent, day: string, hour: number) => {
+type Props = {
+    asignaciones: HorarioRegistro[];
+    setAsignaciones: React.Dispatch<React.SetStateAction<HorarioRegistro[]>>;
+}
+const ScheduleGrid = ({ asignaciones, setAsignaciones }: Props) => {
+    const token = localStorage.getItem('token') || '';
+    
+    const handleDrop = async (e: React.DragEvent, day: string, hour: number) => {
         e.preventDefault();
-        // 1. Obtener el ID como string y convertirlo a número
         const idString = e.dataTransfer.getData("materiaId");
-        const materiaId = Number(idString);
+        const subject_id = Number(idString);
+        const subject_name = e.dataTransfer.getData("materiaNombre");
+        const color = e.dataTransfer.getData("materiaColor");
 
         const existe = asignaciones.find(a => a.day === day && a.hour === hour);
         if (existe) return;
 
+        // Formatear horas para MySQL (HH:mm:ss)
+        const start_time = `${hour.toString().padStart(2, '0')}:00:00`;
+        const end_time = `${hour.toString().padStart(2, '0')}:59:59`;
+
         const nuevaAsignacion: HorarioRegistro = {
-            subject_id: materiaId,
+            subject_id,
+            subject_name,
             day,
-            hour
+            hour,
+            color,
         };
 
-        setAsignaciones([...asignaciones, nuevaAsignacion]);
+        try {
+            // 1. Guardar en DB
+            const response = await saveToSchedule({
+                subject_id,
+                day,
+                start_time,
+                end_time,
+                classroom: subject_name // Usando el nombre como classroom por ahora
+            }, token);
 
-        //fetch
-
-        console.log(`Dropped on Materia ${materiaId}, Día ${day}, Hora ${hour}:00`);
-        // Aquí harás el fetch a tu backend de Node/Express
+            // 2. Actualizar estado local con el ID devuelto por la DB (importante para borrar)
+            setAsignaciones(prev => [...prev, { ...nuevaAsignacion, id: response.insertedId }]);
+            
+        } catch (error) {
+            console.error("Error al guardar:", error);
+            alert("No se pudo guardar la materia en el horario.");
+        }
     };
 
-    const removeAsignacion = (day: string, hour: number) => {
-        setAsignaciones(asignaciones.filter(a => !(a.day === day && a.hour === hour)));
+    const handleRemove = async (id?: number, day?: string, hour?: number) => {
+        if (!id) return;
+
+        try {
+            await deleteFromSchedule(id, token);
+            setAsignaciones(prev => prev.filter(a => a.id !== id));
+        } catch (error) {
+            console.error("Error al eliminar:", error);
+        }
     }
 
     return (
@@ -73,11 +102,12 @@ const ScheduleGrid = () => {
                                 >
                                     {asignada && (
                                         <div
-                                            onClick={() => removeAsignacion(day, hour)}
-                                            className="absolute inset-1 bg-blue-500 text-white text-[10px] p-1 rounded shadow-sm flex items-center justify-center text-center cursor-pointer hover:bg-red-500 transition-colors"
+                                            onClick={() => handleRemove(asignada.id, day, hour)}
+                                            className="absolute inset-1 bg-blue-500 text-white text-[10px] p-1 rounded shadow-sm flex items-center justify-center text-center cursor-pointer hover:bg-red-500 transition-colors font-bold [text-shadow:_0.5px_0.5px_0_#000,_-0.5px_-0.5px_0_#000,_0.5px_-0.5px_0_#000,_-0.5px_0.5px_0_#000]"
+                                            style={{ backgroundColor: asignada.color }}
                                             title="Click para eliminar"
                                         >
-                                            Materia {asignada.subject_id}
+                                            {asignada.subject_name}
                                         </div>
                                     )}
                                 </div>
