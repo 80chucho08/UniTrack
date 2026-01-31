@@ -63,4 +63,21 @@ const getSchedule = async (req, res) => {
     }
 }
 
-module.exports = { getSubjectsBySemester };
+const deleteScheduleSubject = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const { id } = req.params; // ID de la fila en la tabla schedule
+
+        const result = await scheduleModel.deleteScheduleSubject(userId, id);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: "No se encontró el registro o no tienes permiso" });
+        }
+
+        res.json({ message: "Materia eliminada del horario" });
+    } catch (error) {
+        res.status(500).json({ message: "Error al eliminar la materia", error: error.message });
+    }
+}
+
+module.exports = { getSubjectsBySemester, saveScheduleSubject, getSchedule, deleteScheduleSubject };
