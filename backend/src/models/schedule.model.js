@@ -39,7 +39,7 @@ const deleteScheduleSubject = async (userId, scheduleId) => {
     return result;
 }
 
-const getScheduleSubjects = async () => {
+const getScheduleSubjects = async (userId) => {
     const query = `
         SELECT 
             sch.id as schedule_id,
