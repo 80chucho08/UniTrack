@@ -20,7 +20,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/semesters", semesterRoutes);
 app.use("/api", subjectRoutes);
-app.use("/api", scheduleRoutes);
+app.use("/api/schedule", scheduleRoutes);
 // Ruta de prueba
 app.get("/", (req, res) => {
   res.json({ message: "UniTrack API funcionando " });
