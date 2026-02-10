@@ -6,7 +6,8 @@ import {
     ChevronLeft,
     Menu,
     LogOut,
-    Calendar
+    Calendar,
+    LayoutList,
 } from "lucide-react";
 
 export function Sidebar() {
@@ -84,6 +85,18 @@ export function Sidebar() {
                         >
                         <Calendar size={20} />
                         {!collapsed && <span className="text-sm font-medium">Horario</span>}
+                    </button>
+
+                    <button
+                        onClick={() => navigate("/dashboard/todo")}
+                        className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors
+                            ${location.pathname === "/dashboard/todo"
+                                ? "bg-blue-50 text-blue-600"
+                                : "text-gray-600 hover:bg-gray-100"}
+                            `}
+                        >
+                        <LayoutList  size={20} />
+                        {!collapsed && <span className="text-sm font-medium">To-Do List</span>}
                     </button>
                 </nav>
 
