@@ -1,4 +1,8 @@
+import { useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
+import { User } from "lucide-react";
 export function AppHeader() {
+  const { user } = useContext(AuthContext); 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white/80 backdrop-blur-md">
       <div className="flex h-14 items-center justify-between px-6">
@@ -14,7 +18,12 @@ export function AppHeader() {
           <button className="text-sm text-gray-600 hover:text-gray-900 transition-colors">
             Ayuda
           </button>
-          <div className="h-8 w-8 rounded-full bg-gray-200 border" /> {/* Placeholder para Avatar */}
+          <div className="font-bold">
+            {user?.name}
+          </div>
+          <div className="h-8 w-8 rounded-full bg-gray-200 border justify-center items-center flex"> 
+            <User size={20}/>  
+          </div> 
         </div>
       </div>
     </header>
