@@ -6,6 +6,7 @@ import SemesterDashboard from "./pages/SemesterDashboard";
 import PrivateRoute from "./routes/PrivateRoute";
 import DashboardLayout from "./layouts/DashboardLayout";
 import Schedule from "./pages/Schedule";
+import Todo from "./pages/Todo";
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
               element={<SemesterDashboard />}
             />
             <Route path="schedule" element={<Schedule />} />
+            <Route path="todo" element={<Todo />} />
           </Route>
         </Route>
       </Routes>
