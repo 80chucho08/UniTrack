@@ -31,15 +31,16 @@ function Dashboard() {
     fetchSemesters();
   }, [token]);
 
-  const handleAddSemester = async (name: string) => {
+  const handleAddSemester = async (name: string, period: string) => {
     try {
       if (!token) return;
 
-      const response = await createSemester(name, token);
+      const response = await createSemester(name, period, token);
 
       const newSemester = {
         id: response.semesterId,
-        name
+        name,
+        period
       };
 
       setSemesters((prev) => [...prev, newSemester]);
