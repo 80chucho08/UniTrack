@@ -1,7 +1,7 @@
-const {pool} = require("../config/db");
+const { pool } = require("../config/db");
 
 
-const getSemestersByUser = async(id) => {
+const getSemestersByUser = async (id) => {
     const query = (`SELECT S.id, S.name 
                     FROM users U 
                     JOIN semesters S
@@ -12,12 +12,19 @@ const getSemestersByUser = async(id) => {
     return rows;
 }
 
-const AddSemester = async(userId, name ) => {
-    const query = (`INSERT INTO semesters (user_id, name, created_at) VALUES (?, ?, NOW())`);
+const AddSemester = async (userId, name, period) => {
 
-    const [result] = await pool.execute(query, [userId, name]);
+    const query = `
+        INSERT INTO semesters (user_id, name, period, created_at)
+        VALUES (?, ?, ?, NOW())
+    `;
+
+    const [result] = await pool.execute(
+        query,
+        [userId, name, period]
+    );
 
     return result.insertId;
-}
+};
 
 module.exports = { getSemestersByUser, AddSemester };

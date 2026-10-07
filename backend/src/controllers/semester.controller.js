@@ -24,15 +24,15 @@ const createSemester = async (req, res) => {
     try {
         const { id } = req.user; // Esto saca la propiedad 'id' de req.user
         const userId = id;
-        const { name } = req.body;
+        const { name, period } = req.body;
 
-        if (!userId || !name) {
+        if (!userId || !name || !period) {
             return res.status(400).json({
-                message: "Faltan datos obliagtorios (userId o name)"
+                message: "Faltan datos obligatorios (userId, name o period)"
             });
         }
 
-        const insertId = await semesterModel.AddSemester(userId, name);
+        const insertId = await semesterModel.AddSemester(userId, name, period);
 
         res.status(201).json({
             message: "Semestre creado con exito",
