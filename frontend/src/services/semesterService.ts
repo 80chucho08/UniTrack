@@ -3,12 +3,16 @@ const API_URL = 'http://localhost:3000/api/semesters';
 export interface Semester {
     id: number;
     name: string;
+    period: string;
 }
 
-export async function getSemesters(tokke: string): Promise<Semester[]> {
+export async function getSemesters(
+    token: string
+): Promise<Semester[]> {
+
     const res = await fetch(API_URL, {
         headers: {
-            Authorization: `Bearer ${tokke}`
+            Authorization: `Bearer ${token}`
         }
     });
 
@@ -20,22 +24,26 @@ export async function getSemesters(tokke: string): Promise<Semester[]> {
 }
 
 export interface CreateSemesterResponse {
-  semesterId: number;
-  message: string;
+    semesterId: number;
+    message: string;
 }
-
 
 export async function createSemester(
     name: string,
+    period: string,
     token: string
 ): Promise<CreateSemesterResponse> {
+
     const res = await fetch(API_URL, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify({ name })
+        body: JSON.stringify({
+            name,
+            period
+        })
     });
 
     if (!res.ok) {

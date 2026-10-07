@@ -1,14 +1,16 @@
 // components/AddSemesterCard.tsx
 import { useState } from 'react';
 
-export const AddSemesterCard = ({ onAdd }: { onAdd: (name: string) => void }) => {
+export const AddSemesterCard = ({ onAdd }: { onAdd: (name: string, period: string) => void }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState("");
+  const [period, setPeriod] = useState("");
 
   const handleSubmit = () => {
-    if (name.trim()) {
-      onAdd(name);
+    if (name.trim() && period.trim()) {
+      onAdd(name, period);
       setName("");
+      setPeriod("");
       setIsEditing(false);
     }
   };
@@ -33,6 +35,14 @@ export const AddSemesterCard = ({ onAdd }: { onAdd: (name: string) => void }) =>
         placeholder="Ej: 3er Semestre"
         value={name}
         onChange={(e) => setName(e.target.value)}
+        onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
+      />
+
+      <input
+        className="p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        placeholder="Ej: Agosto 2026 - Enero 2027"
+        value={period}
+        onChange={(e) => setPeriod(e.target.value)}
         onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
       />
       <div className="flex gap-2">
