@@ -34,7 +34,7 @@ function Register() {
 
       login(data.token, data.user);
       navigate("/");
-    } catch (err) {
+    } catch {
       setError("No se pudo crear la cuenta");
     } finally {
       setLoading(false);

@@ -13,8 +13,20 @@ export interface ScheduleItem {
     subject_color?: string;
 }
 
+// Fila devuelta por GET /api/schedule/grid (schedule unido con subjects)
+export interface ScheduleGridRow {
+    schedule_id: number;
+    subject_id: number;
+    day: string;
+    start_time: string;
+    end_time: string;
+    classroom: string;
+    subject_name: string;
+    subject_color: string;
+}
+
 // Obtener el horario guardado
-export async function getFullSchedule(token: string): Promise<ScheduleItem[]> {
+export async function getFullSchedule(token: string): Promise<ScheduleGridRow[]> {
     const res = await fetch(`${API_URL}/grid`, {
         headers: { Authorization: `Bearer ${token}` }
     });

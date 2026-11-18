@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from "react";
-import type { Materia, HorarioRegistro } from "../types/schedule";
+import type { HorarioRegistro } from "../types/schedule";
 import type { Semester } from "../services/semesterService";
 import ScheduleGrid from '../components/schedule/ScheduleGrid';
 import SchedulePanel from '../components/schedule/SchedulePanel';
@@ -39,7 +39,7 @@ const Schedule = () => {
                 const data = await getFullSchedule(token);
 
                 // Mapeamos los datos del backend al formato que usa tu Grid
-                const mapeado: HorarioRegistro[] = data.map((item: any) => ({
+                const mapeado: HorarioRegistro[] = data.map((item) => ({
                     id: item.schedule_id, // Usamos el ID de la tabla schedule
                     subject_id: item.subject_id,
                     subject_name: item.subject_name,

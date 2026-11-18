@@ -49,7 +49,7 @@ function Login() {
             navigate("/");
 
 
-        } catch (err) {
+        } catch {
             setError("Email o contaseña incorrectos");
         } finally {
             setLoading(false);

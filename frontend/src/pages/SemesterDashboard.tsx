@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import { useEffect, useState, useContext } from 'react';
+import { useCallback, useEffect, useState, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { getSubjects, type Subject } from '../services/subjectService';
 import { SubjectCard } from '../components/SubjectCard';
@@ -15,7 +15,7 @@ function SemesterDashboard() {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
 
-    const fetchSubjects = async () => {
+    const fetchSubjects = useCallback(async () => {
         try {
             if (!token || !semesterId) return;
             const data = await getSubjects(Number(semesterId), token);
@@ -25,11 +25,11 @@ function SemesterDashboard() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [semesterId, token]);
 
     useEffect(() => {
         fetchSubjects();
-    }, [semesterId, token]);
+    }, [fetchSubjects]);
 
     return (
         <>
