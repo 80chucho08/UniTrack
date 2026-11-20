@@ -14,6 +14,9 @@ Los campos descritos reflejan las lecturas/escrituras del código, no validacion
 | `POST /api/semesters` | Sí | Body `{ name, period }`; `201 { message, semesterId }`. |
 | `GET /api/semesters/:semesterId/subjects` | Sí | `200` arreglo de materias con `id`, `user_id`, `semester_id`, `name`, `teacher_name`, `color`. |
 | `POST /api/semesters/:semesterId/subjects` | Sí | Body requiere `name`; admite `teacher_name`, `teacher_email`, `credits`, `color`, `evaluation_criteria`. `201 { message, subjectId }`. |
+| `GET /api/subjects` | Sí | `200` todas las materias del usuario (`id`, `name`, `color`, `semester_id`, `semester_name`), del semestre más reciente al más antiguo. |
+| `GET /api/todos` | Sí | `200` todas las tareas del usuario, con o sin materia, con los mismos campos que las de materia. |
+| `POST /api/todos` | Sí | Body `{ title, subject_id?, description?, due_date? }`; sin `subject_id` la tarea queda sin materia. `201` con la tarea; `404` si la materia no es del usuario. |
 | `GET /api/subjects/:subjectId` | Sí | `200` materia completa (incluye `header_image`) más `semester_name` y `semester_period`; `404` si no es del usuario. |
 | `PUT /api/subjects/:subjectId` | Sí | Actualización parcial de `name`, `teacher_name`, `teacher_email`, `credits` (entero ≥ 0 o vacío), `color`, `evaluation_criteria`. `""` se guarda como `null`. `200` con la materia actualizada; `400` si queda sin nombre. |
 | `DELETE /api/subjects/:subjectId` | Sí | Borra la materia y sus tareas en una transacción; notas, calificaciones y horario caen en cascada. `200 { message }` o `404`. |
@@ -21,7 +24,7 @@ Los campos descritos reflejan las lecturas/escrituras del código, no validacion
 | `GET /api/subjects/:subjectId/notes` | Sí | `200` notas (`id`, `subject_id`, `title`, `content`, `created_at`, `updated_at`) ordenadas por última edición. |
 | `POST /api/subjects/:subjectId/notes` | Sí | Body `{ title, content? }`; `201` con la nota creada. |
 | `PUT /api/notes/:noteId` / `DELETE /api/notes/:noteId` | Sí | Edición parcial (`200` nota) / borrado (`200 { message }`); `404` si no es del usuario. |
-| `GET /api/subjects/:subjectId/todos` | Sí | `200` tareas (`id`, `subject_id`, `title`, `description`, `due_date` `YYYY-MM-DD`, `status` `pending`/`completed`, `created_at`). |
+| `GET /api/subjects/:subjectId/todos` | Sí | `200` tareas (`id`, `subject_id`, `title`, `description`, `due_date` `YYYY-MM-DD`, `status` `pending`/`completed`, `created_at`, más `subject_name`, `subject_color`, `semester_id`, `semester_name`, que son `null` si la tarea no tiene materia). |
 | `POST /api/subjects/:subjectId/todos` | Sí | Body `{ title, description?, due_date? }`; `201` con la tarea creada. |
 | `PUT /api/todos/:todoId` / `DELETE /api/todos/:todoId` | Sí | Edición parcial, p. ej. `{ status: "completed" }` (`200` tarea) / borrado. |
 | `GET /api/subjects/:subjectId/grades` | Sí | `200` calificaciones (`id`, `subject_id`, `name`, `value` 0–100, `weight` % 0–100, `date`, `created_at`) con números ya convertidos. |

@@ -17,6 +17,23 @@ const getSubjects = async (userId, semesterId) => {
     return rows;
 }
 
+// Todas las materias del usuario con su semestre (para selectores)
+const getSubjectsByUser = async (userId) => {
+    const query = `SELECT
+            Sb.id,
+            Sb.name,
+            Sb.color,
+            Sb.semester_id,
+            S.name AS semester_name
+        FROM subjects Sb
+        INNER JOIN semesters S ON Sb.semester_id = S.id
+        WHERE Sb.user_id = ?
+        ORDER BY S.created_at DESC, S.id DESC, Sb.name`;
+
+    const [rows] = await pool.execute(query, [userId]);
+    return rows;
+}
+
 // Detalle de una materia del usuario, con datos de su semestre
 const getSubjectById = async (userId, subjectId) => {
     const query = `SELECT
@@ -161,6 +178,7 @@ const deleteSubject = async (userId, subjectId) => {
 
 module.exports = {
     getSubjects,
+    getSubjectsByUser,
     getSubjectById,
     addSubject,
     updateSubject,

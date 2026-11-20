@@ -82,6 +82,19 @@ export async function createSubject(
     return res.json();
 }
 
+// Resumen de cada materia del usuario, para selectores
+export interface SubjectOption {
+    id: number;
+    name: string;
+    color: string | null;
+    semester_id: number;
+    semester_name: string;
+}
+
+export function getAllSubjects(token: string) {
+    return apiRequest<SubjectOption[]>('/subjects', token, 'Error al obtener las materias');
+}
+
 export function getSubject(subjectId: number, token: string) {
     return apiRequest<SubjectDetail>(
         `/subjects/${subjectId}`, token, 'Error al obtener la materia'

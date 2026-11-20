@@ -28,10 +28,27 @@ const getTodos = async (req, res) => {
     }
 };
 
+// Todas las tareas del usuario (página global de To-Do List)
+const getAllTodos = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const todos = await todoModel.getTodosByUser(userId);
+        res.status(200).json(todos);
+    } catch (error) {
+        console.error("Error en getAllTodos", error);
+        res.status(500).json({ message: "Error al obtener las tareas" });
+    }
+};
+
+// La materia viene en la URL (/subjects/:subjectId/todos) o en el body
+// (/todos, subject_id opcional: sin materia la tarea es general)
 const createTodo = async (req, res) => {
     try {
         const userId = req.user.id;
-        const { subjectId } = req.params;
+        const rawSubjectId = req.params.subjectId ?? req.body.subject_id;
+        const subjectId = rawSubjectId === undefined || rawSubjectId === null || rawSubjectId === ""
+            ? null
+            : rawSubjectId;
         const title = (req.body.title || "").trim();
 
         if (!title) {
@@ -43,7 +60,7 @@ const createTodo = async (req, res) => {
             return res.status(400).json({ message: dueDate.error });
         }
 
-        if (!(await subjectModel.subjectBelongsToUser(userId, subjectId))) {
+        if (subjectId !== null && !(await subjectModel.subjectBelongsToUser(userId, subjectId))) {
             return res.status(404).json({ message: "Materia no encontrada" });
         }
 
@@ -124,4 +141,4 @@ const deleteTodo = async (req, res) => {
     }
 };
 
-module.exports = { getTodos, createTodo, updateTodo, deleteTodo };
+module.exports = { getTodos, getAllTodos, createTodo, updateTodo, deleteTodo };

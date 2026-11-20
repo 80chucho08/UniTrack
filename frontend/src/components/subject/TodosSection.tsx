@@ -1,8 +1,8 @@
 import { useContext, useState } from "react";
-import { Check, ListChecks, Plus, Trash2 } from "lucide-react";
+import { ListChecks, Plus } from "lucide-react";
 import { AuthContext } from "../../context/AuthContext";
 import { createTodo, deleteTodo, updateTodo, type Todo } from "../../services/todoService";
-import { daysUntil, formatShortDate } from "../../utils/date";
+import { TodoItem } from "../todo/TodoItem";
 
 interface Props {
     subjectId: number;
@@ -19,34 +19,6 @@ function sortTodos(list: Todo[]): Todo[] {
         if (b.due_date) return 1;
         return b.created_at.localeCompare(a.created_at);
     });
-}
-
-function DueBadge({ todo }: { todo: Todo }) {
-    if (!todo.due_date) return null;
-
-    const days = daysUntil(todo.due_date);
-    const done = todo.status === "completed";
-
-    let label = formatShortDate(todo.due_date);
-    let style = "bg-gray-100 text-gray-500";
-
-    if (!done) {
-        if (days < 0) {
-            label = `Vencida · ${label}`;
-            style = "bg-red-50 text-red-600";
-        } else if (days === 0) {
-            label = "Hoy";
-            style = "bg-amber-50 text-amber-700";
-        } else if (days === 1) {
-            label = "Mañana";
-            style = "bg-amber-50 text-amber-700";
-        } else if (days <= 7) {
-            label = `En ${days} días`;
-            style = "bg-blue-50 text-blue-600";
-        }
-    }
-
-    return <span className={`text-xs font-semibold px-2 py-0.5 rounded-md whitespace-nowrap ${style}`}>{label}</span>;
 }
 
 export function TodosSection({ subjectId, todos, setTodos }: Props) {
@@ -141,35 +113,9 @@ export function TodosSection({ subjectId, todos, setTodos }: Props) {
                 <p className="text-sm text-center text-gray-500 py-4">No hay tareas para esta materia.</p>
             ) : (
                 <ul className="flex flex-col gap-2">
-                    {sorted.map(todo => {
-                        const done = todo.status === "completed";
-                        return (
-                            <li
-                                key={todo.id}
-                                className="group flex items-center gap-3 p-3 rounded-xl border border-gray-100 hover:border-indigo-200 transition-colors"
-                            >
-                                <button
-                                    onClick={() => handleToggle(todo)}
-                                    title={done ? "Marcar como pendiente" : "Marcar como completada"}
-                                    className={`w-6 h-6 shrink-0 rounded-md border-2 flex items-center justify-center transition-colors
-                                        ${done ? "bg-emerald-500 border-emerald-500 text-white" : "border-gray-300 hover:border-indigo-500"}`}
-                                >
-                                    {done && <Check size={14} strokeWidth={3} />}
-                                </button>
-                                <span className={`flex-1 min-w-0 text-sm break-words ${done ? "line-through text-gray-400" : "text-gray-800"}`}>
-                                    {todo.title}
-                                </span>
-                                <DueBadge todo={todo} />
-                                <button
-                                    onClick={() => handleDelete(todo)}
-                                    title="Eliminar tarea"
-                                    className="text-gray-300 hover:text-red-600 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-all"
-                                >
-                                    <Trash2 size={16} />
-                                </button>
-                            </li>
-                        );
-                    })}
+                    {sorted.map(todo => (
+                        <TodoItem key={todo.id} todo={todo} onToggle={handleToggle} onDelete={handleDelete} />
+                    ))}
                 </ul>
             )}
         </section>

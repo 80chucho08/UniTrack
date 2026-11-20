@@ -29,6 +29,16 @@ const getSubjects = async (req, res) => {
     }
 }
 
+const getAllSubjects = async (req, res) => {
+    try {
+        const subjects = await subjectModel.getSubjectsByUser(req.user.id);
+        res.status(200).json(subjects);
+    } catch (error) {
+        console.error("Error en getAllSubjects", error);
+        res.status(500).json({ message: "Error al obtener materias" });
+    }
+}
+
 const getSubjectById = async (req, res) => {
     try {
         const userId = req.user.id;
@@ -176,6 +186,7 @@ const deleteSubject = async (req, res) => {
 
 module.exports = {
     getSubjects,
+    getAllSubjects,
     getSubjectById,
     createSubject,
     updateSubject,
