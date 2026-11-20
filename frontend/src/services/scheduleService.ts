@@ -25,6 +25,23 @@ export interface ScheduleGridRow {
     subject_color: string;
 }
 
+// Clase de una materia, devuelta por GET /api/schedule/subject/:subjectId
+export interface SubjectClass {
+    schedule_id: number;
+    day: string;
+    start_time: string; // HH:mm
+    end_time: string;   // HH:mm
+    classroom: string | null;
+}
+
+export async function getSubjectSchedule(subjectId: number, token: string): Promise<SubjectClass[]> {
+    const res = await fetch(`${API_URL}/subject/${subjectId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+    });
+    if (!res.ok) throw new Error('Error al obtener el horario de la materia');
+    return res.json();
+}
+
 // Obtener el horario guardado
 export async function getFullSchedule(token: string): Promise<ScheduleGridRow[]> {
     const res = await fetch(`${API_URL}/grid`, {

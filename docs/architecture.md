@@ -11,7 +11,7 @@
 
 `src/main.tsx` monta `AuthProvider` y `App`. `App.tsx` define `/login`, `/register`, una redirección de `/` a `/dashboard` y rutas protegidas por `PrivateRoute`. `DashboardLayout` compone `Sidebar`, `AppHeader`, el `Outlet` de la página y `AppFooter`.
 
-Páginas: `Dashboard` lista/crea semestres; `SemesterDashboard` lista materias y abre `CreateSubjectModal`; `Schedule` reúne semestres, materias y asignaciones mediante `ScheduleSelect`, `SchedulePanel` y `ScheduleGrid`; `Todo` es solo un placeholder. `SubjectCard` enlaza a `/subject/:id`, ruta que no está definida en `App.tsx`.
+Páginas: `Dashboard` lista/crea semestres; `SemesterDashboard` lista materias y abre `CreateSubjectModal`; `Schedule` reúne semestres, materias y asignaciones mediante `ScheduleSelect`, `SchedulePanel` y `ScheduleGrid`; `SubjectDashboard` (`/dashboard/subject/:subjectId`, enlazada desde `SubjectCard`) carga en paralelo materia, notas, tareas, calificaciones y clases, guarda ese estado y lo pasa a los componentes de `components/subject/` (encabezado con portada, resumen, notas, tareas, calificaciones, información y modal de edición), que hacen sus propias llamadas a la API y actualizan las listas mediante los setters recibidos. La portada se reduce y comprime en el navegador (`utils/image.ts`) y se guarda como data URL. `Todo` es solo un placeholder.
 
 Los servicios en `src/services/` encapsulan solicitudes para semestres, materias y horario. Login y registro hacen `fetch` directamente en sus páginas. `AuthContext` mantiene usuario y JWT en estado y `localStorage`; el middleware de ruta protege la navegación de cliente.
 
@@ -26,6 +26,6 @@ La autenticación de API usa JWT Bearer: `auth.controller.js` registra/autentica
 - Registro devuelve solo `{ message }`, pero `Register.tsx` espera `{ token, user }` e intenta iniciar sesión con ellos.
 - `getProfile` retorna el objeto completo de `users`; el modelo consulta `SELECT *`, que incluye `password_hash` según los campos que consume autenticación.
 - `Schedule` carga asignaciones de todo el usuario; el endpoint de grid no filtra por semestre. El mapeo frontend descarta hora final y aula.
-- `Todo` no implementa funcionalidad y `SubjectCard` apunta a una ruta ausente.
-- El modelo `note.model.js` está vacío; no hay controladores/rutas de notas en el código observado.
+- `Todo` no implementa funcionalidad; las tareas solo se gestionan desde el dashboard de cada materia.
+- El layout no es responsive: el sidebar ocupa 256 px fijos y en móvil deja muy poco espacio al contenido.
 

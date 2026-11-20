@@ -3,6 +3,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import SemesterDashboard from "./pages/SemesterDashboard";
+import SubjectDashboard from "./pages/SubjectDashboard";
 import PrivateRoute from "./routes/PrivateRoute";
 import DashboardLayout from "./layouts/DashboardLayout";
 import Schedule from "./pages/Schedule";
@@ -27,6 +28,7 @@ function App() {
               path="semester/:semesterId"
               element={<SemesterDashboard />}
             />
+            <Route path="subject/:subjectId" element={<SubjectDashboard />} />
             <Route path="schedule" element={<Schedule />} />
             <Route path="todo" element={<Todo />} />
           </Route>

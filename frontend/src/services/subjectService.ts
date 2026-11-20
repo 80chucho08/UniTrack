@@ -1,15 +1,32 @@
-const API_URL = 'http://localhost:3000/api';
+import { apiRequest, API_BASE_URL as API_URL } from './http';
 
 export interface Subject {
     id: number;
     name: string;
-    semesterId: number;
+    semester_id: number;
     user_id: number;
     teacher_name?: string | null;
     teacher_email?: string | null;
-    cerdits?: number | null;
+    credits?: number | null;
     color?: string | null;
-    evaluation_criteria?: number | null;
+    evaluation_criteria?: string | null;
+}
+
+// Detalle que devuelve GET /api/subjects/:subjectId
+export interface SubjectDetail extends Subject {
+    header_image: string | null;
+    created_at: string;
+    semester_name: string;
+    semester_period: string;
+}
+
+export interface SubjectUpdate {
+    name?: string;
+    teacher_name?: string | null;
+    teacher_email?: string | null;
+    credits?: number | null;
+    color?: string | null;
+    evaluation_criteria?: string | null;
 }
 
 export interface CreateSubjectResponse {
@@ -63,4 +80,32 @@ export async function createSubject(
         throw new Error("Error al crear la materia");
     }
     return res.json();
+}
+
+export function getSubject(subjectId: number, token: string) {
+    return apiRequest<SubjectDetail>(
+        `/subjects/${subjectId}`, token, 'Error al obtener la materia'
+    );
+}
+
+export function updateSubject(subjectId: number, data: SubjectUpdate, token: string) {
+    return apiRequest<SubjectDetail>(
+        `/subjects/${subjectId}`, token, 'Error al actualizar la materia',
+        { method: 'PUT', body: data }
+    );
+}
+
+// headerImage: data URL, URL http(s) o null para quitarla
+export function updateSubjectHeaderImage(subjectId: number, headerImage: string | null, token: string) {
+    return apiRequest<{ message: string; header_image: string | null }>(
+        `/subjects/${subjectId}/header-image`, token, 'Error al actualizar la imagen',
+        { method: 'PUT', body: { header_image: headerImage } }
+    );
+}
+
+export function deleteSubject(subjectId: number, token: string) {
+    return apiRequest<{ message: string }>(
+        `/subjects/${subjectId}`, token, 'Error al eliminar la materia',
+        { method: 'DELETE' }
+    );
 }

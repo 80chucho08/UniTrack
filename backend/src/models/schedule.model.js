@@ -59,4 +59,22 @@ const getScheduleSubjects = async (userId) => {
 }
 
 
-module.exports = { getSubjectsBySemester, saveScheduleSubject, deleteScheduleSubject, getScheduleSubjects };
+// Clases de una sola materia, ordenadas por día y hora
+const getScheduleBySubject = async (userId, subjectId) => {
+    const query = `
+        SELECT
+            id AS schedule_id,
+            day,
+            TIME_FORMAT(start_time, '%H:%i') AS start_time,
+            TIME_FORMAT(end_time, '%H:%i') AS end_time,
+            classroom
+        FROM schedule
+        WHERE user_id = ? AND subject_id = ?
+        ORDER BY FIELD(day, 'Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'), start_time
+    `;
+    const [rows] = await pool.execute(query, [userId, subjectId]);
+    return rows;
+}
+
+
+module.exports = { getSubjectsBySemester, saveScheduleSubject, deleteScheduleSubject, getScheduleSubjects, getScheduleBySubject };

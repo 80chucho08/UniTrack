@@ -80,4 +80,18 @@ const deleteScheduleSubject = async (req, res) => {
     }
 }
 
-module.exports = { getSubjectsBySemester, saveScheduleSubject, getSchedule, deleteScheduleSubject };
+// Clases asignadas a una materia (para el dashboard de la materia)
+const getScheduleBySubject = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const { subjectId } = req.params;
+
+        const rows = await scheduleModel.getScheduleBySubject(userId, subjectId);
+        res.status(200).json(rows);
+    } catch (error) {
+        console.error("Error en getScheduleBySubject", error);
+        res.status(500).json({ message: "Error al obtener el horario de la materia" });
+    }
+}
+
+module.exports = { getSubjectsBySemester, saveScheduleSubject, getSchedule, deleteScheduleSubject, getScheduleBySubject };

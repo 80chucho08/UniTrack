@@ -5,6 +5,7 @@ const scheduleController = require("../controllers/schedule.controller");
 
 router.get("/subjects/:semesterId", authMiddleware, scheduleController.getSubjectsBySemester);
 router.get("/grid", authMiddleware, scheduleController.getSchedule);
+router.get("/subject/:subjectId", authMiddleware, scheduleController.getScheduleBySubject);
 router.post("/grid", authMiddleware, scheduleController.saveScheduleSubject);
 router.delete("/grid/:id", authMiddleware, scheduleController.deleteScheduleSubject);
 
