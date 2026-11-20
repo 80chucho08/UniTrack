@@ -1,4 +1,6 @@
 // components/SemesterCard.tsx
+import { ChevronRight, GraduationCap } from "lucide-react";
+
 interface Props {
   name: string;
   onClick: () => void;
@@ -6,14 +8,20 @@ interface Props {
 
 export const SemesterCard = ({ name, onClick }: Props) => {
   return (
-    <div 
+    <button
       onClick={onClick}
-      className="group p-6 bg-white rounded-xl border-2 border-transparent hover:border-blue-500 shadow-md hover:shadow-lg cursor-pointer transition-all duration-200 flex flex-col items-center justify-center min-h-[150px]"
+      className="group w-full p-4 bg-white rounded-xl border border-gray-100 border-l-4 border-l-indigo-500 hover:border-indigo-200 hover:border-l-indigo-600 hover:shadow-md text-left transition-all duration-200 flex items-center gap-4 min-h-[96px]"
     >
-      <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-3 group-hover:bg-blue-600 transition-colors">
-        <span className="text-blue-600 group-hover:text-white font-bold text-xl">#</span>
+      <div className="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center shrink-0 group-hover:bg-indigo-600 transition-colors">
+        <GraduationCap size={22} className="text-indigo-600 group-hover:text-white transition-colors" />
       </div>
-      <h3 className="text-lg font-semibold text-gray-800">{name}</h3>
-    </div>
+      <div className="flex-1 min-w-0">
+        <h3 className="text-base font-semibold text-gray-800 group-hover:text-indigo-600 transition-colors truncate">
+          {name}
+        </h3>
+        <p className="text-sm text-gray-500">Ver materias</p>
+      </div>
+      <ChevronRight size={20} className="text-gray-300 group-hover:text-indigo-500 group-hover:translate-x-0.5 transition-all" />
+    </button>
   );
 };
