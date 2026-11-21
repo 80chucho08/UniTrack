@@ -1,1 +1,73 @@
 @import "tailwindcss";
+
+/* =====================================================================
+   Tema UniTrack — "Tinta": soft minimal SaaS con vocabulario de cuaderno.
+
+   Para cambiar el color de marca en toda la app, edita solo estas dos
+   variables (la escala brand-50…900 se calcula a partir de ellas):
+     --brand-hue     tono OKLCH (0–360). 264 = azul tinta, 160 = verde
+                     pizarrón, 300 = violeta, 25 = coral, 220 = cian.
+     --brand-chroma  saturación (0.08 = muy apagado, 0.20 = vivo).
+   Los neutros toman un leve matiz de --neutral-hue para no verse grises
+   planos.
+
+   Paleta base (equivalentes aproximados en hex):
+     lienzo     #F5F6F9   fondo de la app          → bg-canvas
+     superficie #FFFFFF   paneles y barras         → bg-surface
+     tinta      #1E2433   texto principal          → text-ink
+     tinta 2    #5E6578   texto secundario         → text-ink-muted
+     línea      #E3E6EE   bordes y divisores       → border-line
+     marca      #4353D6   acción / estado activo   → brand-600
+     resaltador #F6E58D   un solo acento (hoy)     → bg-highlight
+   ===================================================================== */
+
+:root {
+  --brand-hue: 264;
+  --brand-chroma: 0.19;
+  --neutral-hue: 262;
+}
+
+@theme {
+  --font-sans: "Figtree", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* Escala de marca */
+  --color-brand-50: oklch(0.975 calc(var(--brand-chroma) * 0.1) var(--brand-hue));
+  --color-brand-100: oklch(0.945 calc(var(--brand-chroma) * 0.22) var(--brand-hue));
+  --color-brand-200: oklch(0.895 calc(var(--brand-chroma) * 0.4) var(--brand-hue));
+  --color-brand-300: oklch(0.81 calc(var(--brand-chroma) * 0.62) var(--brand-hue));
+  --color-brand-400: oklch(0.7 calc(var(--brand-chroma) * 0.85) var(--brand-hue));
+  --color-brand-500: oklch(0.6 var(--brand-chroma) var(--brand-hue));
+  --color-brand-600: oklch(0.52 var(--brand-chroma) var(--brand-hue));
+  --color-brand-700: oklch(0.45 calc(var(--brand-chroma) * 0.92) var(--brand-hue));
+  --color-brand-800: oklch(0.38 calc(var(--brand-chroma) * 0.78) var(--brand-hue));
+  --color-brand-900: oklch(0.3 calc(var(--brand-chroma) * 0.6) var(--brand-hue));
+
+  /* Neutros con matiz */
+  --color-canvas: oklch(0.975 0.004 var(--neutral-hue));
+  --color-surface: #ffffff;
+  --color-line: oklch(0.918 0.009 var(--neutral-hue));
+  --color-line-strong: oklch(0.86 0.012 var(--neutral-hue));
+  --color-ink: oklch(0.255 0.028 var(--neutral-hue));
+  --color-ink-muted: oklch(0.5 0.024 var(--neutral-hue));
+  --color-ink-subtle: oklch(0.66 0.018 var(--neutral-hue));
+
+  /* Acento único: resaltador */
+  --color-highlight: oklch(0.92 0.12 98);
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-canvas text-ink font-sans;
+  }
+
+  /* Foco visible y consistente para navegación con teclado */
+  :focus-visible {
+    outline: 2px solid var(--color-brand-500);
+    outline-offset: 2px;
+  }
+}

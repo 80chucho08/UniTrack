@@ -26,5 +26,5 @@ La autenticación de API usa JWT Bearer: `auth.controller.js` registra/autentica
 - Registro devuelve solo `{ message }`, pero `Register.tsx` espera `{ token, user }` e intenta iniciar sesión con ellos.
 - `getProfile` retorna el objeto completo de `users`; el modelo consulta `SELECT *`, que incluye `password_hash` según los campos que consume autenticación.
 - `Schedule` carga asignaciones de todo el usuario; el endpoint de grid no filtra por semestre. El mapeo frontend descarta hora final y aula.
-- El layout no es responsive: el sidebar ocupa 256 px fijos y en móvil deja muy poco espacio al contenido.
+- En móvil el sidebar es un cajón que se abre desde el header (`DashboardLayout` guarda su estado); algunas páginas internas, como el horario, aún no están adaptadas a pantallas angostas.
 
