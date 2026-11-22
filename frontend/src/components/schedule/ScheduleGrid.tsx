@@ -1,4 +1,6 @@
 import React from 'react';
+import { X } from 'lucide-react';
+import { readableTextColor } from '../../utils/subject';
 import type { HorarioRegistro } from '../../types/schedule';
 import { saveToSchedule, deleteFromSchedule } from '../../services//scheduleService';
 
@@ -92,6 +94,7 @@ const ScheduleGrid = ({ asignaciones, setAsignaciones }: Props) => {
                         {DAYS.map(day => {
                             // Buscar si hay una materia en esta celda
                             const asignada = asignaciones.find(a => a.day === day && a.hour === hour);
+                            const colorClase = asignada?.color || "#6366f1";
 
                             return (
                                 <div
@@ -103,11 +106,21 @@ const ScheduleGrid = ({ asignaciones, setAsignaciones }: Props) => {
                                     {asignada && (
                                         <div
                                             onClick={() => handleRemove(asignada.id)}
-                                            className="absolute inset-1 bg-blue-500 text-white text-[10px] p-1 rounded shadow-sm flex items-center justify-center text-center cursor-pointer hover:bg-red-500 transition-colors font-bold [text-shadow:_0.5px_0.5px_0_#000,_-0.5px_-0.5px_0_#000,_0.5px_-0.5px_0_#000,_-0.5px_0.5px_0_#000]"
-                                            style={{ backgroundColor: asignada.color }}
-                                            title="Click para eliminar"
+                                            className="group/clase absolute inset-[3px] flex items-center gap-1.5 pl-2 pr-1 rounded-lg cursor-pointer overflow-hidden
+                                                transition hover:ring-2 hover:ring-inset hover:ring-red-500 hover:brightness-95"
+                                            style={{
+                                                background: `linear-gradient(135deg, ${colorClase} 0%, ${colorClase}e0 100%)`,
+                                                color: readableTextColor(colorClase),
+                                                boxShadow: `0 3px 8px -3px ${colorClase}aa, inset 0 1px 0 rgb(255 255 255 / 0.25)`
+                                            }}
+                                            title="Clic para quitar del horario"
                                         >
-                                            {asignada.subject_name}
+                                            <span className="flex-1 min-w-0 truncate text-[11px] font-semibold">
+                                                {asignada.subject_name}
+                                            </span>
+                                            <span className="shrink-0 w-4 h-4 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover/clase:opacity-100 transition-opacity">
+                                                <X size={11} strokeWidth={3} />
+                                            </span>
                                         </div>
                                     )}
                                 </div>

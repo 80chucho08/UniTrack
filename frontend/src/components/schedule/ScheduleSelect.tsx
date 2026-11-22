@@ -9,22 +9,20 @@ interface Props {
 const ScheduleSelect = ({semesters,  selected, onChange }: Props) => {
 
     return (
-        <div >
-            <div className="flex items-center gap-4 bg-white p-4 rounded-xl shadow-sm border border-slate-200">
-                <label className="font-semibold text-slate-700">Semestre:</label>
-                <select
-                    value={selected ?? ""}
-                    onChange={(e) => onChange(Number(e.target.value))}
-                    className="bg-slate-50 border border-slate-300 text-slate-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2"
-                >
-                    {semesters.map(s => (
-                        <option key={s.id} value={s.id}>
-                            {s.name}
-                        </option>
-                    ))}
-                </select>
-            </div>
-        </div>
+        <label className="flex items-center gap-3">
+            <span className="text-sm font-semibold text-ink-muted">Semestre</span>
+            <select
+                value={selected ?? ""}
+                onChange={(e) => onChange(Number(e.target.value))}
+                className="neu-input h-10 min-w-[11rem] rounded-xl px-3 text-sm font-semibold cursor-pointer"
+            >
+                {semesters.map(s => (
+                    <option key={s.id} value={s.id}>
+                        {s.name}
+                    </option>
+                ))}
+            </select>
+        </label>
     );
 }
 

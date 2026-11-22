@@ -60,9 +60,14 @@ const Schedule = () => {
 
     const selectedSemesterData = semesters.find(s => s.id === selectedSemester);
     return (
-        <div className="p-6 max-w-7xl mx-auto space-y-6 bg-slate-50 min-h-screen">
-            <header className="flex justify-between items-center">
-                <h1 className="text-3xl font-bold text-slate-800">Mi Horario</h1>
+        <div className="px-4 py-8 md:px-8 lg:px-10 max-w-7xl w-full mx-auto">
+            <header className="mb-8 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-5">
+                <div>
+                    <h2 className="text-3xl md:text-[2.5rem] md:leading-[1.1] font-extrabold tracking-tight text-ink">
+                        Mi horario
+                    </h2>
+                    <p className="mt-2 text-ink-muted">Organiza tus clases de lunes a viernes.</p>
+                </div>
                 <ScheduleSelect
                     semesters={semesters}
                     selected={selectedSemester}
@@ -70,13 +75,13 @@ const Schedule = () => {
                 />
             </header>
 
-            <div className="grid grid-cols-1 gap-6">
+            <div className="grid grid-cols-1 gap-7">
 
                 {selectedSemesterData ? (
                     <SchedulePanel semester={selectedSemesterData} />
                 ) : (
-                    <div className="p-4 bg-slate-100 rounded-lg text-slate-500">
-                        Selecciona un semestre para ver las materias...
+                    <div className="neu-inset rounded-2xl p-5 text-ink-muted">
+                        Selecciona un semestre para ver sus materias.
                     </div>
                 )}
                 <ScheduleGrid
