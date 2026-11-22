@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Check, Trash2 } from "lucide-react";
 import type { Todo } from "../../services/todoService";
@@ -8,6 +9,7 @@ interface Props {
     onToggle: (todo: Todo) => void;
     onDelete: (todo: Todo) => void;
     showSubject?: boolean; // en la página global se muestra la materia
+    justCompleted?: boolean; // la página avisa si se acaba de completar (la fila puede volver a montarse en otro grupo)
 }
 
 function DueBadge({ todo }: { todo: Todo }) {
@@ -38,19 +40,28 @@ function DueBadge({ todo }: { todo: Todo }) {
     return <span className={`text-xs font-semibold px-2 py-0.5 rounded-md whitespace-nowrap ${style}`}>{label}</span>;
 }
 
-export function TodoItem({ todo, onToggle, onDelete, showSubject = false }: Props) {
+export function TodoItem({ todo, onToggle, onDelete, showSubject = false, justCompleted = false }: Props) {
     const done = todo.status === "completed";
+    // Rebote solo cuando el usuario la marca (no al cargar la lista)
+    const [popping, setPopping] = useState(false);
+
+    const handleToggle = () => {
+        if (!done) setPopping(true);
+        onToggle(todo);
+    };
 
     return (
         <li className="group flex items-center gap-3 px-2.5 py-2.5 rounded-xl hover:bg-white/60 transition-colors">
             {/* Casilla hundida; al completarse se rellena */}
             <button
-                onClick={() => onToggle(todo)}
+                onClick={handleToggle}
+                onAnimationEnd={() => setPopping(false)}
                 title={done ? "Marcar como pendiente" : "Marcar como completada"}
                 className={`w-6 h-6 shrink-0 rounded-lg flex items-center justify-center transition
                     ${done
                         ? "bg-emerald-500 text-white shadow-[2px_2px_6px_rgb(16_185_129/0.35)]"
-                        : "neu-inset hover:ring-2 hover:ring-brand-200"}`}
+                        : "bg-surface ring-1 ring-line-strong shadow-[inset_1px_1px_3px_rgb(30_36_51/0.12)] hover:ring-2 hover:ring-brand-300"}
+                    ${popping || justCompleted ? "motion-safe:animate-check-pop" : ""}`}
             >
                 {done && <Check size={14} strokeWidth={3} />}
             </button>

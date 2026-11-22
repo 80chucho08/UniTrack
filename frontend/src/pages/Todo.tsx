@@ -1,7 +1,6 @@
 import { useContext, useEffect, useState } from "react";
-import { AlertTriangle, CalendarCheck, CheckCircle2, ListChecks, Plus, Search } from "lucide-react";
+import { AlertTriangle, CalendarCheck, CheckCircle2, ListChecks, Plus, Search, Sparkles } from "lucide-react";
 import { AuthContext } from "../context/AuthContext";
-import { DashboardHeader } from "../components/DashboardHeader";
 import { TodoItem } from "../components/todo/TodoItem";
 import {
     createGeneralTodo,
@@ -12,6 +11,7 @@ import {
 } from "../services/todoService";
 import { getAllSubjects, type SubjectOption } from "../services/subjectService";
 import { daysUntil } from "../utils/date";
+import { btnPrimary } from "../utils/ui";
 
 type StatusFilter = "pending" | "completed" | "all";
 // "all" = todas las materias, "none" = tareas sin materia, o el id de una materia
@@ -20,23 +20,22 @@ type SubjectFilter = string;
 interface Group {
     key: string;
     title: string;
-    accent: string;
+    dot: string; // color del punto del grupo
     todos: TodoType[];
 }
 
-const inputClass =
-    "w-full border-2 border-gray-100 rounded-xl px-4 py-2.5 text-sm focus:border-indigo-500 outline-none transition-colors text-gray-800 placeholder:text-gray-400 bg-white";
+const inputClass = "neu-input w-full h-11 rounded-xl px-4 text-sm";
 
 // Agrupa por cercanía de la fecha de entrega; las completadas van al final
 function groupTodos(todos: TodoType[]): Group[] {
     const groups: Group[] = [
-        { key: "overdue", title: "Vencidas", accent: "text-red-600", todos: [] },
-        { key: "today", title: "Hoy", accent: "text-amber-600", todos: [] },
-        { key: "tomorrow", title: "Mañana", accent: "text-amber-600", todos: [] },
-        { key: "week", title: "Próximos 7 días", accent: "text-blue-600", todos: [] },
-        { key: "later", title: "Más adelante", accent: "text-gray-700", todos: [] },
-        { key: "nodate", title: "Sin fecha", accent: "text-gray-500", todos: [] },
-        { key: "completed", title: "Completadas", accent: "text-emerald-600", todos: [] }
+        { key: "overdue", title: "Vencidas", dot: "bg-red-500", todos: [] },
+        { key: "today", title: "Hoy", dot: "bg-amber-500", todos: [] },
+        { key: "tomorrow", title: "Mañana", dot: "bg-amber-400", todos: [] },
+        { key: "week", title: "Próximos 7 días", dot: "bg-brand-500", todos: [] },
+        { key: "later", title: "Más adelante", dot: "bg-ink-subtle", todos: [] },
+        { key: "nodate", title: "Sin fecha", dot: "bg-line-strong", todos: [] },
+        { key: "completed", title: "Completadas", dot: "bg-emerald-500", todos: [] }
     ];
     const byKey = Object.fromEntries(groups.map(g => [g.key, g]));
 
@@ -65,21 +64,68 @@ function groupTodos(todos: TodoType[]): Group[] {
     return groups.filter(g => g.todos.length > 0);
 }
 
+// Mensaje del encabezado según cómo vas
+function statusMessage(pending: number, overdue: number, today: number, total: number): string {
+    if (total === 0) return "Anota tu primera tarea y empieza a organizar el semestre.";
+    if (pending === 0) return "¡Todo al día! No tienes tareas pendientes.";
+    const parts = [`Tienes ${pending} ${pending === 1 ? "tarea pendiente" : "tareas pendientes"}`];
+    if (overdue > 0) parts.push(`${overdue} ${overdue === 1 ? "vencida" : "vencidas"}`);
+    if (today > 0) parts.push(`${today} para hoy`);
+    return parts.length === 1 ? `${parts[0]}.` : `${parts[0]}: ${parts.slice(1).join(" y ")}.`;
+}
+
+// Anillo de progreso: porcentaje de tareas completadas
+function ProgressRing({ done, total }: { done: number; total: number }) {
+    const percent = total === 0 ? 0 : Math.round((done / total) * 100);
+    const radius = 30;
+    const circumference = 2 * Math.PI * radius;
+
+    return (
+        <div className="neu-raised rounded-[24px] pl-3 pr-5 py-3 flex items-center gap-4 self-start sm:self-auto">
+            <div className="neu-inset relative w-[84px] h-[84px] rounded-full flex items-center justify-center shrink-0">
+                <svg viewBox="0 0 76 76" className="absolute inset-[6px] -rotate-90" aria-hidden>
+                    <circle cx="38" cy="38" r={radius} fill="none" strokeWidth="7" className="stroke-line" />
+                    <circle
+                        cx="38"
+                        cy="38"
+                        r={radius}
+                        fill="none"
+                        strokeWidth="7"
+                        strokeLinecap="round"
+                        className={`${percent === 100 ? "stroke-emerald-500" : "stroke-brand-500"} motion-safe:transition-[stroke-dashoffset] motion-safe:duration-700`}
+                        strokeDasharray={circumference}
+                        strokeDashoffset={circumference * (1 - percent / 100)}
+                    />
+                </svg>
+                <span className="relative text-lg font-extrabold text-ink tabular-nums">{percent}%</span>
+            </div>
+            <div>
+                <p className="text-sm font-semibold text-ink">
+                    {percent === 100 && total > 0 ? "¡Completaste todo!" : "Progreso"}
+                </p>
+                <p className="text-sm text-ink-muted tabular-nums">
+                    {done} de {total} completadas
+                </p>
+            </div>
+        </div>
+    );
+}
+
 interface StatProps {
     icon: React.ReactNode;
     label: string;
     value: number;
-    accent: string;
+    tone: string;
 }
 
-const Stat = ({ icon, label, value, accent }: StatProps) => (
-    <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
-        <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${accent}`}>
+const Stat = ({ icon, label, value, tone }: StatProps) => (
+    <div className="neu-raised rounded-[22px] p-4 sm:p-5 flex items-center gap-3 sm:gap-4">
+        <div className={`neu-inset w-11 h-11 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center shrink-0 ${tone}`}>
             {icon}
         </div>
-        <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">{label}</p>
-            <p className="text-2xl font-extrabold text-gray-900 leading-tight">{value}</p>
+        <div className="min-w-0">
+            <p className="text-sm text-ink-muted leading-tight">{label}</p>
+            <p className="text-2xl font-extrabold text-ink leading-tight tabular-nums">{value}</p>
         </div>
     </div>
 );
@@ -100,6 +146,8 @@ const Todo = () => {
     const [newSubjectId, setNewSubjectId] = useState("");
     const [dueDate, setDueDate] = useState("");
     const [saving, setSaving] = useState(false);
+    // Tarea recién completada, para animar su casilla al cambiar de grupo
+    const [justCompletedId, setJustCompletedId] = useState<number | null>(null);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -146,6 +194,11 @@ const Todo = () => {
     const handleToggle = async (todo: TodoType) => {
         if (!token) return;
         const status = todo.status === "completed" ? "pending" : "completed";
+
+        if (status === "completed") {
+            setJustCompletedId(todo.id);
+            setTimeout(() => setJustCompletedId(cur => (cur === todo.id ? null : cur)), 600);
+        }
 
         // actualización optimista
         setTodos(prev => prev.map(t => (t.id === todo.id ? { ...t, status } : t)));
@@ -201,59 +254,80 @@ const Todo = () => {
         </optgroup>
     ));
 
-    const tabs: { value: StatusFilter; label: string }[] = [
-        { value: "pending", label: `Pendientes (${pending.length})` },
-        { value: "completed", label: `Completadas (${completedCount})` },
+    const tabs: { value: StatusFilter; label: string; count?: number }[] = [
+        { value: "pending", label: "Pendientes", count: pending.length },
+        { value: "completed", label: "Completadas", count: completedCount },
         { value: "all", label: "Todas" }
     ];
 
+    const allClear = statusFilter === "pending" && !query && subjectFilter === "all";
+
     return (
-        <main className="p-6 lg:p-10 max-w-7xl w-full mx-auto">
-            <DashboardHeader
-                title="To-Do List"
-                subtitle="Todas tus tareas, entregas y exámenes de todas las materias"
-            />
+        <div className="px-4 py-8 md:px-8 lg:px-10 max-w-7xl w-full mx-auto">
+            {/* Encabezado con progreso */}
+            <header className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
+                <div>
+                    <h2 className="text-3xl md:text-[2.5rem] md:leading-[1.1] font-extrabold tracking-tight text-ink">
+                        To-Do List
+                    </h2>
+                    <p className="mt-2 text-ink-muted max-w-xl">
+                        {loading
+                            ? "Cargando tus tareas..."
+                            : statusMessage(pending.length, overdueCount, todayCount, todos.length)}
+                    </p>
+                </div>
+                {!loading && <ProgressRing done={completedCount} total={todos.length} />}
+            </header>
 
             {/* Resumen */}
-            <section className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
-                <Stat icon={<ListChecks size={22} />} accent="bg-indigo-50 text-indigo-600" label="Pendientes" value={pending.length} />
-                <Stat icon={<AlertTriangle size={22} />} accent="bg-red-50 text-red-600" label="Vencidas" value={overdueCount} />
-                <Stat icon={<CalendarCheck size={22} />} accent="bg-amber-50 text-amber-600" label="Para hoy" value={todayCount} />
-                <Stat icon={<CheckCircle2 size={22} />} accent="bg-emerald-50 text-emerald-600" label="Completadas" value={completedCount} />
+            <section className="grid grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-5 mb-8">
+                <Stat icon={<ListChecks size={21} />} tone="text-brand-600" label="Pendientes" value={pending.length} />
+                <Stat icon={<AlertTriangle size={21} />} tone="text-red-500" label="Vencidas" value={overdueCount} />
+                <Stat icon={<CalendarCheck size={21} />} tone="text-amber-600" label="Para hoy" value={todayCount} />
+                <Stat icon={<CheckCircle2 size={21} />} tone="text-emerald-600" label="Completadas" value={completedCount} />
             </section>
 
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-7">
                 {/* Lista */}
-                <section className="xl:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                    <div className="flex flex-col gap-3 mb-6">
-                        <div className="flex flex-wrap gap-2">
-                            {tabs.map(tab => (
-                                <button
-                                    key={tab.value}
-                                    onClick={() => setStatusFilter(tab.value)}
-                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors
-                                        ${statusFilter === tab.value
-                                            ? "bg-indigo-600 text-white"
-                                            : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
-                                >
-                                    {tab.label}
-                                </button>
-                            ))}
+                <section className="xl:col-span-2 neu-raised rounded-[24px] p-5 sm:p-6">
+                    <div className="flex flex-col gap-4 mb-6">
+                        {/* Selector de estado: canal hundido con la opción activa elevada */}
+                        <div className="neu-inset flex w-full sm:inline-flex sm:w-auto sm:self-start p-1 rounded-2xl gap-1">
+                            {tabs.map(tab => {
+                                const active = statusFilter === tab.value;
+                                return (
+                                    <button
+                                        key={tab.value}
+                                        onClick={() => setStatusFilter(tab.value)}
+                                        aria-pressed={active}
+                                        className={`flex-1 sm:flex-none flex items-center justify-center gap-1.5 sm:gap-2 h-9 px-2 sm:px-3.5 rounded-xl text-[13px] sm:text-sm font-semibold whitespace-nowrap transition
+                                            ${active ? "neu-raised-sm text-brand-700" : "text-ink-muted hover:text-ink"}`}
+                                    >
+                                        {tab.label}
+                                        {tab.count !== undefined && (
+                                            <span className={`min-w-[1.4rem] h-5 px-1.5 rounded-full text-xs font-bold flex items-center justify-center tabular-nums
+                                                ${active ? "bg-brand-600 text-white" : "bg-line text-ink-muted"}`}>
+                                                {tab.count}
+                                            </span>
+                                        )}
+                                    </button>
+                                );
+                            })}
                         </div>
-                        <div className="flex flex-col sm:flex-row gap-2">
+                        <div className="flex flex-col sm:flex-row gap-3">
                             <div className="relative flex-1">
-                                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                                <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-subtle" />
                                 <input
                                     value={search}
                                     onChange={(e) => setSearch(e.target.value)}
                                     placeholder="Buscar tarea o materia..."
-                                    className={`${inputClass} pl-9`}
+                                    className={`${inputClass} pl-10`}
                                 />
                             </div>
                             <select
                                 value={subjectFilter}
                                 onChange={(e) => setSubjectFilter(e.target.value)}
-                                className={`${inputClass} sm:w-60`}
+                                className={`${inputClass} sm:w-60 cursor-pointer`}
                             >
                                 <option value="all">Todas las materias</option>
                                 <option value="none">Sin materia</option>
@@ -265,25 +339,40 @@ const Todo = () => {
                     {error && <p className="text-sm text-red-600 mb-4">{error}</p>}
 
                     {loading ? (
-                        <div className="flex flex-col gap-2 animate-pulse">
-                            {[1, 2, 3, 4].map(i => <div key={i} className="h-14 bg-gray-100 rounded-xl" />)}
+                        <div className="flex flex-col gap-3 animate-pulse">
+                            {[1, 2, 3, 4].map(i => <div key={i} className="neu-inset h-12 rounded-xl" />)}
                         </div>
                     ) : groups.length === 0 ? (
-                        <div className="p-10 border-2 border-dashed border-gray-200 rounded-xl text-center text-gray-500">
-                            {todos.length === 0
-                                ? "Aún no tienes tareas. Agrega la primera desde el panel."
-                                : statusFilter === "pending" && !query && subjectFilter === "all"
-                                    ? "¡Todo al día! No tienes tareas pendientes."
-                                    : "Ninguna tarea coincide con los filtros."}
+                        <div className="neu-inset rounded-2xl px-6 py-10 text-center">
+                            <span className={`neu-raised-sm mx-auto mb-4 w-14 h-14 rounded-full flex items-center justify-center
+                                ${todos.length > 0 && allClear ? "text-emerald-500" : "text-brand-500"}`}>
+                                {todos.length > 0 && allClear ? <Sparkles size={24} /> : <ListChecks size={24} />}
+                            </span>
+                            <p className="font-semibold text-ink">
+                                {todos.length === 0
+                                    ? "Aún no tienes tareas"
+                                    : allClear
+                                        ? "¡Todo al día!"
+                                        : "Ninguna tarea coincide con los filtros"}
+                            </p>
+                            <p className="text-sm text-ink-muted mt-1">
+                                {todos.length === 0
+                                    ? "Agrega la primera desde el panel de nueva tarea."
+                                    : allClear
+                                        ? "No tienes tareas pendientes. Buen trabajo."
+                                        : "Prueba con otra materia o cambia la búsqueda."}
+                            </p>
                         </div>
                     ) : (
                         <div className="flex flex-col gap-6">
                             {groups.map(group => (
                                 <div key={group.key}>
-                                    <h3 className={`text-sm font-semibold uppercase tracking-wider mb-2 ${group.accent}`}>
-                                        {group.title} <span className="text-gray-400 font-medium">({group.todos.length})</span>
+                                    <h3 className="flex items-center gap-2 mb-2 px-1 text-sm font-semibold text-ink">
+                                        <span className={`w-2 h-2 rounded-full ${group.dot}`} />
+                                        {group.title}
+                                        <span className="text-ink-subtle font-medium tabular-nums">{group.todos.length}</span>
                                     </h3>
-                                    <ul className="flex flex-col gap-2">
+                                    <ul className="neu-inset rounded-2xl p-1.5 flex flex-col gap-0.5">
                                         {group.todos.map(todo => (
                                             <TodoItem
                                                 key={todo.id}
@@ -291,6 +380,7 @@ const Todo = () => {
                                                 onToggle={handleToggle}
                                                 onDelete={handleDelete}
                                                 showSubject
+                                                justCompleted={todo.id === justCompletedId}
                                             />
                                         ))}
                                     </ul>
@@ -301,9 +391,10 @@ const Todo = () => {
                 </section>
 
                 {/* Panel lateral */}
-                <div className="flex flex-col gap-6">
-                    <section className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                        <h2 className="text-xl font-bold text-gray-800 mb-4">Nueva tarea</h2>
+                <div className="flex flex-col gap-7">
+                    {/* Contorno de marca para distinguirla; outline no reemplaza la sombra neumórfica */}
+                    <section className="neu-raised rounded-[24px] p-5 sm:p-6 outline-2 outline-brand-300/70 -outline-offset-1">
+                        <h2 className="text-lg font-bold text-ink mb-4">Nueva tarea</h2>
                         <form onSubmit={handleAdd} className="flex flex-col gap-3">
                             <input
                                 value={title}
@@ -315,7 +406,7 @@ const Todo = () => {
                             <select
                                 value={newSubjectId}
                                 onChange={(e) => setNewSubjectId(e.target.value)}
-                                className={inputClass}
+                                className={`${inputClass} cursor-pointer`}
                             >
                                 <option value="">Sin materia</option>
                                 {subjectOptions}
@@ -324,43 +415,53 @@ const Todo = () => {
                                 type="date"
                                 value={dueDate}
                                 onChange={(e) => setDueDate(e.target.value)}
-                                className={`${inputClass} text-gray-600`}
+                                className={`${inputClass} text-ink-muted`}
                             />
                             <button
                                 type="submit"
                                 disabled={saving || !title.trim()}
-                                className="flex items-center justify-center gap-1 bg-indigo-600 text-white px-4 py-2.5 rounded-lg font-medium hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                className={`${btnPrimary} h-11 mt-1`}
                             >
                                 <Plus size={18} /> {saving ? "Guardando..." : "Agregar tarea"}
                             </button>
                         </form>
                     </section>
 
-                    <section className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                        <h2 className="text-xl font-bold text-gray-800 mb-4">Pendientes por materia</h2>
+                    <section className="neu-raised rounded-[24px] p-5 sm:p-6">
+                        <h2 className="text-lg font-bold text-ink mb-4">Pendientes por materia</h2>
                         {pendingBySubject.length === 0 && pendingWithoutSubject === 0 ? (
-                            <p className="text-sm text-gray-500">No hay tareas pendientes.</p>
+                            <p className="text-sm text-ink-muted">No hay tareas pendientes.</p>
                         ) : (
-                            <ul className="flex flex-col gap-1">
-                                {pendingBySubject.map(s => (
-                                    <li key={s.id}>
-                                        <button
-                                            onClick={() => {
-                                                setSubjectFilter(String(s.id));
-                                                setStatusFilter("pending");
-                                            }}
-                                            className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left transition-colors
-                                                ${subjectFilter === String(s.id) ? "bg-indigo-50" : "hover:bg-gray-50"}`}
-                                        >
-                                            <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: s.color || "#6366f1" }} />
-                                            <span className="flex-1 min-w-0">
-                                                <span className="block text-sm font-medium text-gray-800 truncate">{s.name}</span>
-                                                <span className="block text-xs text-gray-400 truncate">{s.semester_name}</span>
-                                            </span>
-                                            <span className="text-sm font-bold text-gray-700">{s.count}</span>
-                                        </button>
-                                    </li>
-                                ))}
+                            <ul className="flex flex-col gap-2">
+                                {pendingBySubject.map(s => {
+                                    const active = subjectFilter === String(s.id);
+                                    return (
+                                        <li key={s.id}>
+                                            <button
+                                                onClick={() => {
+                                                    setSubjectFilter(String(s.id));
+                                                    setStatusFilter("pending");
+                                                }}
+                                                aria-pressed={active}
+                                                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition
+                                                    ${active ? "neu-inset" : "hover:bg-white/60"}`}
+                                            >
+                                                <span
+                                                    className="w-3 h-3 rounded-full shrink-0"
+                                                    style={{ backgroundColor: s.color || "#6366f1", boxShadow: `0 0 0 3px ${s.color || "#6366f1"}26` }}
+                                                />
+                                                <span className="flex-1 min-w-0">
+                                                    <span className="block text-sm font-semibold text-ink truncate">{s.name}</span>
+                                                    <span className="block text-xs text-ink-subtle truncate">{s.semester_name}</span>
+                                                </span>
+                                                <span className={`min-w-[1.6rem] h-6 px-2 rounded-full text-xs font-bold flex items-center justify-center tabular-nums
+                                                    ${active ? "bg-brand-600 text-white" : "neu-raised-sm text-ink"}`}>
+                                                    {s.count}
+                                                </span>
+                                            </button>
+                                        </li>
+                                    );
+                                })}
                                 {pendingWithoutSubject > 0 && (
                                     <li>
                                         <button
@@ -368,12 +469,16 @@ const Todo = () => {
                                                 setSubjectFilter("none");
                                                 setStatusFilter("pending");
                                             }}
-                                            className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left transition-colors
-                                                ${subjectFilter === "none" ? "bg-indigo-50" : "hover:bg-gray-50"}`}
+                                            aria-pressed={subjectFilter === "none"}
+                                            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition
+                                                ${subjectFilter === "none" ? "neu-inset" : "hover:bg-white/60"}`}
                                         >
-                                            <span className="w-2.5 h-2.5 rounded-full shrink-0 bg-gray-300" />
-                                            <span className="flex-1 text-sm font-medium text-gray-600">Sin materia</span>
-                                            <span className="text-sm font-bold text-gray-700">{pendingWithoutSubject}</span>
+                                            <span className="w-3 h-3 rounded-full shrink-0 bg-line-strong" />
+                                            <span className="flex-1 text-sm font-semibold text-ink-muted">Sin materia</span>
+                                            <span className={`min-w-[1.6rem] h-6 px-2 rounded-full text-xs font-bold flex items-center justify-center tabular-nums
+                                                ${subjectFilter === "none" ? "bg-brand-600 text-white" : "neu-raised-sm text-ink"}`}>
+                                                {pendingWithoutSubject}
+                                            </span>
                                         </button>
                                     </li>
                                 )}
@@ -382,7 +487,7 @@ const Todo = () => {
                         {subjectFilter !== "all" && (
                             <button
                                 onClick={() => setSubjectFilter("all")}
-                                className="mt-3 text-sm font-semibold text-indigo-500 hover:underline"
+                                className="mt-4 text-sm font-semibold text-brand-600 hover:text-brand-700 hover:underline"
                             >
                                 Ver todas las materias
                             </button>
@@ -390,7 +495,7 @@ const Todo = () => {
                     </section>
                 </div>
             </div>
-        </main>
+        </div>
     );
 };
 
