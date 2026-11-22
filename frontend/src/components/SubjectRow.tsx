@@ -14,41 +14,41 @@ export function SubjectRow({ subject }: Props) {
     return (
         <Link
             to={`/dashboard/subject/${subject.id}`}
-            className="group relative flex items-center gap-4 px-4 py-3.5 rounded-xl transition-all duration-200 hover:bg-gray-50 hover:translate-x-1"
+            className="group relative flex items-center gap-4 px-4 py-3.5 rounded-xl transition-colors hover:bg-canvas"
         >
-            {/* Barra de color que aparece al pasar el mouse */}
+            {/* Barra con el color de la materia al pasar el mouse */}
             <span
-                className="absolute left-0 top-2 bottom-2 w-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                className="absolute left-0 top-2.5 bottom-2.5 w-[3px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
                 style={{ backgroundColor: color }}
             />
 
             <span
-                className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 text-sm font-bold shadow-sm transition-transform duration-200 group-hover:scale-105"
-                style={{ background: `linear-gradient(135deg, ${color}, ${color}cc)`, color: readableTextColor(color) }}
+                className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 text-sm font-bold"
+                style={{ background: `linear-gradient(135deg, ${color}, ${color}d9)`, color: readableTextColor(color) }}
             >
                 {subjectInitials(subject.name)}
             </span>
 
             <span className="flex-1 min-w-0">
-                <span className="block font-semibold text-gray-800 group-hover:text-indigo-600 transition-colors truncate">
+                <span className="block font-semibold text-ink group-hover:text-brand-700 transition-colors truncate">
                     {subject.name}
                 </span>
-                <span className="flex items-center gap-1 text-sm text-gray-500 truncate">
+                <span className="flex items-center gap-1 text-sm text-ink-muted truncate">
                     {subject.teacher_name ? (
                         <>
-                            <User size={13} className="shrink-0" />
+                            <User size={13} className="shrink-0 text-ink-subtle" />
                             <span className="truncate">{subject.teacher_name}</span>
                         </>
                     ) : (
-                        <span className="text-gray-400">Sin profesor asignado</span>
+                        <span className="text-ink-subtle">Sin profesor asignado</span>
                     )}
                 </span>
             </span>
 
-            <span className="hidden sm:inline text-sm font-medium text-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity">
-                Abrir
-            </span>
-            <ChevronRight size={18} className="text-gray-300 group-hover:text-indigo-500 transition-colors shrink-0" />
+            <ChevronRight
+                size={18}
+                className="shrink-0 text-ink-subtle/60 transition-transform group-hover:translate-x-0.5 group-hover:text-brand-600"
+            />
         </Link>
     );
 }

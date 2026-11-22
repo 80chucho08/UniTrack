@@ -14,49 +14,52 @@ interface StatProps {
     label: string;
     value: string;
     hint: string;
-    accent: string;
+    tone: string;
+    alert?: boolean;
 }
 
-const Stat = ({ icon, label, value, hint, accent }: StatProps) => (
-    <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
-        <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${accent}`}>
+const Stat = ({ icon, label, value, hint, tone, alert }: StatProps) => (
+    <div className="neu-raised rounded-[22px] p-4 sm:p-5 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:gap-4">
+        {/* Pozo hundido para el ícono */}
+        <div className={`neu-inset w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 ${tone}`}>
             {icon}
         </div>
         <div className="min-w-0">
-            <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">{label}</p>
-            <p className="text-2xl font-extrabold text-gray-900 leading-tight">{value}</p>
-            <p className="text-xs text-gray-500 truncate">{hint}</p>
+            <p className="text-sm text-ink-muted">{label}</p>
+            <p className="text-2xl font-extrabold text-ink leading-tight tabular-nums">{value}</p>
+            <p className={`text-xs truncate ${alert ? "text-red-600 font-semibold" : "text-ink-subtle"}`}>{hint}</p>
         </div>
     </div>
 );
 
 export function SubjectStats({ average, evaluatedWeight, pendingTodos, overdueTodos, notesCount, classesPerWeek }: Props) {
     return (
-        <section className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
+        <section className="grid grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-5 mb-8">
             <Stat
                 icon={<Award size={22} />}
-                accent="bg-indigo-50 text-indigo-600"
+                tone="text-brand-600"
                 label="Promedio"
                 value={average === null ? "—" : average.toFixed(1)}
                 hint={`${evaluatedWeight.toFixed(0)}% del curso evaluado`}
             />
             <Stat
                 icon={<ListChecks size={22} />}
-                accent="bg-amber-50 text-amber-600"
+                tone="text-amber-600"
                 label="Tareas pendientes"
                 value={String(pendingTodos)}
                 hint={overdueTodos > 0 ? `${overdueTodos} vencida${overdueTodos === 1 ? "" : "s"}` : "Al día"}
+                alert={overdueTodos > 0}
             />
             <Stat
                 icon={<StickyNote size={22} />}
-                accent="bg-emerald-50 text-emerald-600"
+                tone="text-emerald-600"
                 label="Notas"
                 value={String(notesCount)}
                 hint="Apuntes de la materia"
             />
             <Stat
                 icon={<CalendarClock size={22} />}
-                accent="bg-sky-50 text-sky-600"
+                tone="text-sky-600"
                 label="Clases por semana"
                 value={String(classesPerWeek)}
                 hint="Según tu horario"

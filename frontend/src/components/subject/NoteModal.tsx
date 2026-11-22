@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Trash2 } from "lucide-react";
+import { btnDanger, btnGhost, btnPrimary } from "../../utils/ui";
 import type { Note, NoteInput } from "../../services/noteService";
 
 interface Props {
@@ -46,36 +47,36 @@ export function NoteModal({ note, onClose, onSave, onDelete }: Props) {
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <div
-                className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity"
+                className="absolute inset-0 bg-ink/35 backdrop-blur-sm transition-opacity"
                 onClick={onClose}
             />
 
             <form
                 onSubmit={handleSubmit}
-                className="relative bg-white rounded-3xl shadow-2xl w-full max-w-2xl p-8 z-10 flex flex-col max-h-[90vh]"
+                className="relative bg-canvas border border-white/70 rounded-[28px] shadow-[0_24px_60px_-12px_rgb(30_36_51/0.35)] w-full max-w-2xl p-8 z-10 flex flex-col max-h-[90vh]"
             >
                 <div className="mb-6">
-                    <h2 className="text-2xl font-bold text-gray-800">{note ? "Editar nota" : "Nueva nota"}</h2>
-                    <p className="text-gray-500 text-sm">Guarda apuntes, resúmenes o ideas de la materia.</p>
+                    <h2 className="text-2xl font-bold text-ink">{note ? "Editar nota" : "Nueva nota"}</h2>
+                    <p className="text-ink-muted text-sm">Guarda apuntes, resúmenes o ideas de la materia.</p>
                 </div>
 
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Título</label>
+                <label className="block text-sm font-semibold text-ink mb-2">Título</label>
                 <input
                     autoFocus
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     required
                     maxLength={150}
-                    className="w-full border-2 border-gray-100 rounded-xl px-4 py-3 mb-6 focus:border-indigo-500 focus:ring-0 transition-colors outline-none text-gray-800 placeholder:text-gray-400"
+                    className="w-full neu-input rounded-xl px-4 py-3 mb-6"
                     placeholder="Ej. Resumen unidad 2"
                 />
 
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Contenido</label>
+                <label className="block text-sm font-semibold text-ink mb-2">Contenido</label>
                 <textarea
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
                     rows={12}
-                    className="w-full flex-1 min-h-[180px] border-2 border-gray-100 rounded-xl px-4 py-3 mb-6 focus:border-indigo-500 focus:ring-0 transition-colors outline-none text-gray-800 placeholder:text-gray-400 resize-y"
+                    className="w-full flex-1 min-h-[180px] neu-input rounded-xl px-4 py-3 mb-6 resize-y"
                     placeholder="Escribe aquí tus apuntes..."
                 />
 
@@ -87,7 +88,7 @@ export function NoteModal({ note, onClose, onSave, onDelete }: Props) {
                             type="button"
                             onClick={handleDelete}
                             disabled={saving}
-                            className="flex items-center gap-2 px-4 py-2.5 text-red-600 font-semibold hover:bg-red-50 rounded-xl transition-colors disabled:opacity-50"
+                            className={btnDanger}
                         >
                             <Trash2 size={16} /> Eliminar
                         </button>
@@ -97,14 +98,14 @@ export function NoteModal({ note, onClose, onSave, onDelete }: Props) {
                         <button
                             type="button"
                             onClick={onClose}
-                            className="px-6 py-2.5 text-gray-500 font-semibold hover:bg-gray-50 rounded-xl transition-colors"
+                            className={btnGhost}
                         >
                             Cancelar
                         </button>
                         <button
                             type="submit"
                             disabled={saving || !title.trim()}
-                            className="bg-indigo-600 text-white px-8 py-2.5 rounded-xl font-bold hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-indigo-200 transition-all active:scale-95"
+                            className={`${btnPrimary} px-6`}
                         >
                             {saving ? "Guardando..." : "Guardar"}
                         </button>

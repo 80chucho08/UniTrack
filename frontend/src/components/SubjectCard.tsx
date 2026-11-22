@@ -14,34 +14,33 @@ export function SubjectCard({ subject }: Props) {
     return (
         <Link
             to={`/dashboard/subject/${subject.id}`}
-            className="group relative overflow-hidden rounded-2xl bg-white border border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col"
+            className="group relative overflow-hidden rounded-xl bg-surface border border-line hover:border-line-strong hover:shadow-[0_6px_20px_-8px_rgb(30_36_51/0.18)] transition-[border-color,box-shadow] flex flex-col"
         >
             {/* Franja de portada con el color de la materia */}
             <div
                 className="relative h-20 overflow-hidden"
-                style={{ background: `linear-gradient(135deg, ${color} 0%, ${color}b3 60%, #1e293b 140%)` }}
+                style={{ background: `linear-gradient(135deg, ${color} 0%, ${color}cc 65%, ${color}99 100%)` }}
             >
-                <span className="absolute -right-3 -bottom-6 text-6xl font-black text-white/15 select-none transition-transform duration-500 group-hover:scale-110">
+                <span className="absolute -right-2 -bottom-5 text-6xl font-extrabold tracking-tight text-white/20 select-none">
                     {subjectInitials(subject.name)}
                 </span>
-                <ArrowUpRight
-                    size={18}
-                    className="absolute top-3 right-3 text-white/0 group-hover:text-white/90 transition-colors"
-                />
+                <span className="absolute top-3 right-3 w-7 h-7 rounded-full bg-white/0 group-hover:bg-white/90 flex items-center justify-center transition-colors">
+                    <ArrowUpRight size={15} className="text-transparent group-hover:text-ink transition-colors" />
+                </span>
             </div>
 
             <div className="p-4 flex-1 flex flex-col">
-                <h2 className="font-bold text-gray-800 group-hover:text-indigo-600 transition-colors line-clamp-2">
+                <h3 className="font-semibold text-ink group-hover:text-brand-700 transition-colors line-clamp-2">
                     {subject.name}
-                </h2>
-                <p className="mt-auto pt-2 flex items-center gap-1 text-sm text-gray-500 truncate">
+                </h3>
+                <p className="mt-auto pt-2 flex items-center gap-1 text-sm text-ink-muted truncate">
                     {subject.teacher_name ? (
                         <>
-                            <User size={13} className="shrink-0" />
+                            <User size={13} className="shrink-0 text-ink-subtle" />
                             <span className="truncate">{subject.teacher_name}</span>
                         </>
                     ) : (
-                        <span className="text-gray-400">Sin profesor asignado</span>
+                        <span className="text-ink-subtle">Sin profesor asignado</span>
                     )}
                 </p>
             </div>

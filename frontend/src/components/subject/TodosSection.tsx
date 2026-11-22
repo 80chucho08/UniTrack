@@ -3,6 +3,8 @@ import { ListChecks, Plus } from "lucide-react";
 import { AuthContext } from "../../context/AuthContext";
 import { createTodo, deleteTodo, updateTodo, type Todo } from "../../services/todoService";
 import { TodoItem } from "../todo/TodoItem";
+import { SectionTitle } from "./SectionTitle";
+import { btnPrimary } from "../../utils/ui";
 
 interface Props {
     subjectId: number;
@@ -75,34 +77,33 @@ export function TodosSection({ subjectId, todos, setTodos }: Props) {
     const pending = todos.filter(t => t.status === "pending").length;
 
     return (
-        <section className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-            <div className="flex items-center gap-2 mb-5">
-                <ListChecks size={20} className="text-amber-600" />
-                <h2 className="text-xl font-bold text-gray-800">Tareas</h2>
-                <span className="text-sm text-gray-400">({pending} pendiente{pending === 1 ? "" : "s"})</span>
+        <section className="neu-raised rounded-[24px] p-5 sm:p-6">
+            <div className="mb-5">
+                <SectionTitle
+                    icon={<ListChecks size={19} />}
+                    tone="text-amber-600"
+                    title="Tareas"
+                    detail={`${pending} pendiente${pending === 1 ? "" : "s"}`}
+                />
             </div>
 
-            <form onSubmit={handleAdd} className="flex flex-col gap-2 mb-5">
+            <form onSubmit={handleAdd} className="flex flex-col gap-3 mb-5">
                 <input
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     maxLength={150}
                     placeholder="Nueva tarea, entrega o examen..."
-                    className="w-full border-2 border-gray-100 rounded-xl px-4 py-2.5 text-sm focus:border-indigo-500 outline-none transition-colors text-gray-800 placeholder:text-gray-400"
+                    className="neu-input w-full h-11 rounded-xl px-4 text-sm"
                 />
-                <div className="flex gap-2">
+                <div className="flex gap-3">
                     <input
                         type="date"
                         value={dueDate}
                         onChange={(e) => setDueDate(e.target.value)}
-                        className="flex-1 min-w-0 border-2 border-gray-100 rounded-xl px-3 py-2 text-sm text-gray-600 focus:border-indigo-500 outline-none transition-colors"
+                        className="neu-input flex-1 min-w-0 h-10 rounded-xl px-3 text-sm text-ink-muted"
                     />
-                    <button
-                        type="submit"
-                        disabled={saving || !title.trim()}
-                        className="flex items-center gap-1 bg-indigo-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                        <Plus size={18} /> Agregar
+                    <button type="submit" disabled={saving || !title.trim()} className={btnPrimary}>
+                        <Plus size={17} /> Agregar
                     </button>
                 </div>
             </form>
@@ -110,9 +111,11 @@ export function TodosSection({ subjectId, todos, setTodos }: Props) {
             {error && <p className="text-sm text-red-600 mb-3">{error}</p>}
 
             {sorted.length === 0 ? (
-                <p className="text-sm text-center text-gray-500 py-4">No hay tareas para esta materia.</p>
+                <p className="neu-inset rounded-2xl text-sm text-center text-ink-muted py-6 px-4">
+                    No hay tareas para esta materia.
+                </p>
             ) : (
-                <ul className="flex flex-col gap-2">
+                <ul className="flex flex-col gap-1">
                     {sorted.map(todo => (
                         <TodoItem key={todo.id} todo={todo} onToggle={handleToggle} onDelete={handleDelete} />
                     ))}

@@ -44,22 +44,22 @@ export function CreateSubjectModal({ semesterId, onClose, onCreated }: Props) {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             {/* Overlay con desenfoque (backdrop-blur) para mayor elegancia */}
             <div
-                className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity"
+                className="absolute inset-0 bg-ink/30 backdrop-blur-sm transition-opacity"
                 onClick={onClose}
             />
 
             {/* Modal con animación de escala */}
             <form
                 onSubmit={handleSubmit}
-                className="relative bg-white rounded-3xl shadow-2xl w-full max-w-md p-8 z-10 animate-in fade-in zoom-in duration-200"
+                className="relative bg-white rounded-2xl shadow-2xl border border-line w-full max-w-md p-8 z-10"
             >
                 <div className="mb-6">
-                    <h2 className="text-2xl font-bold text-gray-800">Nueva materia</h2>
-                    <p className="text-gray-500 text-sm">Organiza tu estudio añadiendo un nuevo curso.</p>
+                    <h2 className="text-2xl font-bold text-ink">Nueva materia</h2>
+                    <p className="text-ink-muted text-sm">Organiza tu estudio añadiendo un nuevo curso.</p>
                 </div>
 
                 <div className="mb-8">
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    <label className="block text-sm font-semibold text-ink mb-2">
                         Nombre de la materia
                     </label>
                     <input
@@ -67,38 +67,38 @@ export function CreateSubjectModal({ semesterId, onClose, onCreated }: Props) {
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         required
-                        className="w-full border-2 border-gray-100 rounded-xl px-4 py-3 focus:border-indigo-500 focus:ring-0 transition-colors outline-none text-gray-800 placeholder:text-gray-400"
+                        className="w-full border border-line rounded-xl px-4 py-3 focus:border-brand-500 focus:ring-2 focus:ring-brand-100 transition-colors outline-none text-ink placeholder:text-ink-subtle"
                         placeholder="Ej. Arquitectura de Software"
                     />
                 </div>
 
                 <div className="mb-8">
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    <label className="block text-sm font-semibold text-ink mb-2">
                         Nombre del Profesor
                     </label>
                     <input
                         value={teacherName}
                         onChange={(e) => setTeacherName(e.target.value)}
-                        className="w-full border-2 border-gray-100 rounded-xl px-4 py-3 focus:border-indigo-500 focus:ring-0 transition-colors outline-none text-gray-800 placeholder:text-gray-400"
+                        className="w-full border border-line rounded-xl px-4 py-3 focus:border-brand-500 focus:ring-2 focus:ring-brand-100 transition-colors outline-none text-ink placeholder:text-ink-subtle"
                         placeholder="Ej. Jesus Carbajal"
                     />
                 </div>
 
                 <div className="mb-8">
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    <label className="block text-sm font-semibold text-ink mb-2">
                         Email del Profesor
                     </label>
                     <input
                         type="email"
                         value={teacherEmail}
                         onChange={(e) => setTeacherEmail(e.target.value)}
-                        className="w-full border-2 border-gray-100 rounded-xl px-4 py-3 focus:border-indigo-500 focus:ring-0 transition-colors outline-none text-gray-800 placeholder:text-gray-400"
+                        className="w-full border border-line rounded-xl px-4 py-3 focus:border-brand-500 focus:ring-2 focus:ring-brand-100 transition-colors outline-none text-ink placeholder:text-ink-subtle"
                         placeholder="Ej. teacher@email.com"
                     />
                 </div>
 
                 <div className="mb-8">
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    <label className="block text-sm font-semibold text-ink mb-2">
                         Color
                     </label>
                     <div className="flex items-center gap-4">
@@ -107,13 +107,13 @@ export function CreateSubjectModal({ semesterId, onClose, onCreated }: Props) {
                             value={color}
                             onChange={(e) => setColor(e.target.value)}
                             required
-                            className="h-12 w-12 rounded-lg border border-gray-200 cursor-pointer"
+                            className="h-12 w-12 rounded-lg border border-line cursor-pointer"
                             placeholder="Ej. Arquitectura de Software"
                         />
                     </div>
                     {/* Preview + hex */}
                     <div className="flex justify-between items-center w-full pl-14 pr-4 mb-2">
-                        <span className="text-sm font-medium text-gray-600 uppercase tracking-wider">
+                        <span className="text-sm font-medium text-ink-muted">
                             Vista previa
                         </span>
                         <span
@@ -134,7 +134,7 @@ export function CreateSubjectModal({ semesterId, onClose, onCreated }: Props) {
                     <button
                         type="button"
                         onClick={onClose}
-                        className="px-6 py-2.5 text-gray-500 font-semibold hover:bg-gray-50 rounded-xl transition-colors"
+                        className="px-6 py-2.5 text-ink-muted font-semibold hover:bg-canvas rounded-xl transition-colors"
                     >
                         Cancelar
                     </button>
@@ -142,7 +142,7 @@ export function CreateSubjectModal({ semesterId, onClose, onCreated }: Props) {
                     <button
                         type="submit"
                         disabled={loading || !name.trim()}
-                        className="bg-indigo-600 text-white px-8 py-2.5 rounded-xl font-bold hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-indigo-200 transition-all active:scale-95"
+                        className="bg-brand-600 text-white px-8 py-2.5 rounded-xl font-bold hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-95"
                     >
                         {loading ? "Guardando..." : "Crear Materia"}
                     </button>

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Trash2 } from "lucide-react";
+import { btnDanger, btnGhost, btnPrimary } from "../../utils/ui";
 import type { SubjectDetail, SubjectUpdate } from "../../services/subjectService";
 
 interface Props {
@@ -10,7 +11,7 @@ interface Props {
 }
 
 const inputClass =
-    "w-full border-2 border-gray-100 rounded-xl px-4 py-3 focus:border-indigo-500 focus:ring-0 transition-colors outline-none text-gray-800 placeholder:text-gray-400";
+    "w-full neu-input rounded-xl px-4 py-3";
 
 export function EditSubjectModal({ subject, onClose, onSave, onDelete }: Props) {
     const [name, setName] = useState(subject.name);
@@ -63,22 +64,22 @@ export function EditSubjectModal({ subject, onClose, onSave, onDelete }: Props) 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <div
-                className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity"
+                className="absolute inset-0 bg-ink/35 backdrop-blur-sm transition-opacity"
                 onClick={onClose}
             />
 
             <form
                 onSubmit={handleSubmit}
-                className="relative bg-white rounded-3xl shadow-2xl w-full max-w-lg p-8 z-10 max-h-[90vh] overflow-y-auto"
+                className="relative bg-canvas border border-white/70 rounded-[28px] shadow-[0_24px_60px_-12px_rgb(30_36_51/0.35)] w-full max-w-lg p-8 z-10 max-h-[90vh] overflow-y-auto"
             >
                 <div className="mb-6">
-                    <h2 className="text-2xl font-bold text-gray-800">Editar materia</h2>
-                    <p className="text-gray-500 text-sm">Actualiza los datos generales del curso.</p>
+                    <h2 className="text-2xl font-bold text-ink">Editar materia</h2>
+                    <p className="text-ink-muted text-sm">Actualiza los datos generales del curso.</p>
                 </div>
 
                 <div className="flex flex-col gap-5 mb-8">
                     <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">Nombre de la materia</label>
+                        <label className="block text-sm font-semibold text-ink mb-2">Nombre de la materia</label>
                         <input
                             autoFocus
                             value={name}
@@ -91,7 +92,7 @@ export function EditSubjectModal({ subject, onClose, onSave, onDelete }: Props) 
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-2">Profesor</label>
+                            <label className="block text-sm font-semibold text-ink mb-2">Profesor</label>
                             <input
                                 value={teacherName}
                                 onChange={(e) => setTeacherName(e.target.value)}
@@ -101,7 +102,7 @@ export function EditSubjectModal({ subject, onClose, onSave, onDelete }: Props) 
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-2">Email del profesor</label>
+                            <label className="block text-sm font-semibold text-ink mb-2">Email del profesor</label>
                             <input
                                 type="email"
                                 value={teacherEmail}
@@ -115,7 +116,7 @@ export function EditSubjectModal({ subject, onClose, onSave, onDelete }: Props) 
 
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-2">Créditos</label>
+                            <label className="block text-sm font-semibold text-ink mb-2">Créditos</label>
                             <input
                                 type="number"
                                 min={0}
@@ -127,15 +128,15 @@ export function EditSubjectModal({ subject, onClose, onSave, onDelete }: Props) 
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-2">Color</label>
+                            <label className="block text-sm font-semibold text-ink mb-2">Color</label>
                             <div className="flex items-center gap-3">
                                 <input
                                     type="color"
                                     value={color}
                                     onChange={(e) => setColor(e.target.value)}
-                                    className="h-12 w-12 rounded-lg border border-gray-200 cursor-pointer"
+                                    className="neu-inset h-12 w-12 rounded-xl p-1.5 cursor-pointer"
                                 />
-                                <span className="font-mono text-sm font-bold" style={{ color }}>
+                                <span className="text-sm font-bold tabular-nums" style={{ color }}>
                                     {color.toUpperCase()}
                                 </span>
                             </div>
@@ -143,7 +144,7 @@ export function EditSubjectModal({ subject, onClose, onSave, onDelete }: Props) 
                     </div>
 
                     <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">Criterios de evaluación</label>
+                        <label className="block text-sm font-semibold text-ink mb-2">Criterios de evaluación</label>
                         <textarea
                             value={criteria}
                             onChange={(e) => setCriteria(e.target.value)}
@@ -161,7 +162,7 @@ export function EditSubjectModal({ subject, onClose, onSave, onDelete }: Props) 
                         type="button"
                         onClick={handleDelete}
                         disabled={saving}
-                        className="flex items-center gap-2 px-4 py-2.5 text-red-600 font-semibold hover:bg-red-50 rounded-xl transition-colors disabled:opacity-50"
+                        className={btnDanger}
                     >
                         <Trash2 size={16} /> <span className="hidden sm:inline">Eliminar materia</span>
                     </button>
@@ -170,14 +171,14 @@ export function EditSubjectModal({ subject, onClose, onSave, onDelete }: Props) 
                         <button
                             type="button"
                             onClick={onClose}
-                            className="px-6 py-2.5 text-gray-500 font-semibold hover:bg-gray-50 rounded-xl transition-colors"
+                            className={btnGhost}
                         >
                             Cancelar
                         </button>
                         <button
                             type="submit"
                             disabled={saving || !name.trim()}
-                            className="bg-indigo-600 text-white px-8 py-2.5 rounded-xl font-bold hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-indigo-200 transition-all active:scale-95"
+                            className={`${btnPrimary} px-6`}
                         >
                             {saving ? "Guardando..." : "Guardar"}
                         </button>

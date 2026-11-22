@@ -84,27 +84,33 @@ function SubjectDashboard() {
 
     if (loading) {
         return (
-            <main className="p-6 lg:p-10 max-w-7xl w-full mx-auto animate-pulse">
-                <div className="h-64 bg-gray-200 rounded-3xl mb-8" />
-                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
-                    {[1, 2, 3, 4].map(i => <div key={i} className="h-24 bg-gray-200 rounded-2xl" />)}
+            <div className="px-4 py-8 md:px-8 lg:px-10 max-w-7xl w-full mx-auto animate-pulse">
+                <div className="neu-raised h-64 rounded-[28px] mb-8" />
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 mb-8">
+                    {[1, 2, 3, 4].map(i => <div key={i} className="neu-raised h-24 rounded-[22px]" />)}
                 </div>
                 <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-                    <div className="xl:col-span-2 h-80 bg-gray-200 rounded-2xl" />
-                    <div className="h-80 bg-gray-200 rounded-2xl" />
+                    <div className="neu-raised xl:col-span-2 h-80 rounded-[24px]" />
+                    <div className="neu-raised h-80 rounded-[24px]" />
                 </div>
-            </main>
+            </div>
         );
     }
 
     if (!subject) {
         return (
-            <main className="p-6 lg:p-10 max-w-7xl w-full mx-auto text-center">
-                <p className="text-gray-500 mt-10">{error || "Materia no encontrada."}</p>
-                <Link to="/dashboard" className="inline-block mt-4 text-indigo-500 font-semibold hover:underline">
-                    ← Volver a mis semestres
-                </Link>
-            </main>
+            <div className="px-4 py-8 md:px-8 lg:px-10 max-w-xl w-full mx-auto">
+                <div className="neu-raised rounded-[24px] p-10 text-center mt-6">
+                    <p className="text-lg font-bold text-ink">No encontramos esta materia</p>
+                    <p className="text-ink-muted mt-1">{error || "Puede que se haya eliminado o que no pertenezca a tu cuenta."}</p>
+                    <Link
+                        to="/dashboard"
+                        className="inline-flex items-center mt-5 h-10 px-4 rounded-xl text-sm font-semibold bg-brand-600 text-white shadow-neu-brand hover:bg-brand-700 transition-colors"
+                    >
+                        Volver a mis semestres
+                    </Link>
+                </div>
+            </div>
         );
     }
 
@@ -114,7 +120,7 @@ function SubjectDashboard() {
 
     return (
         <>
-            <main className="p-6 lg:p-10 max-w-7xl w-full mx-auto">
+            <div className="px-4 py-8 md:px-8 lg:px-10 max-w-7xl w-full mx-auto">
                 <SubjectHeader
                     subject={subject}
                     onImageChange={handleImageChange}
@@ -130,17 +136,17 @@ function SubjectDashboard() {
                     classesPerWeek={classes.length}
                 />
 
-                <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-                    <div className="xl:col-span-2 flex flex-col gap-6">
+                <div className="grid grid-cols-1 xl:grid-cols-3 gap-7">
+                    <div className="xl:col-span-2 flex flex-col gap-7">
                         <NotesSection subjectId={subject.id} color={color} notes={notes} setNotes={setNotes} />
                         <GradesSection subjectId={subject.id} color={color} grades={grades} setGrades={setGrades} />
                     </div>
-                    <div className="flex flex-col gap-6">
+                    <div className="flex flex-col gap-7">
                         <TodosSection subjectId={subject.id} todos={todos} setTodos={setTodos} />
                         <SubjectInfoCard subject={subject} classes={classes} onEdit={() => setIsEditOpen(true)} />
                     </div>
                 </div>
-            </main>
+            </div>
 
             {isEditOpen && (
                 <EditSubjectModal
