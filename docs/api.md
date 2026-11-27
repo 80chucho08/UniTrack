@@ -15,9 +15,9 @@ Base de montaje en `backend/src/app.js`. Las rutas protegidas requieren `Authori
 | `GET /` | No | `{ message }` de prueba. |
 | `GET /api/health/live` | No | Liveness: `200 { status: "ok" }` si el proceso responde; no consulta la BD. |
 | `GET /api/health` | No | Readiness: `SELECT 1` con límite de 2 s. `200 { status: "ok", db: "ok", uptime }` o `503 { status: "error", db: "error" }` (el motivo solo va al log). |
-| `POST /api/auth/register` | No | Body `{ name, email, password }`; `password` de 8 a 72 caracteres, email válido (se guarda en minúsculas). `201 { message }`. Errores: validación `400`, correo existente `409`. |
-| `POST /api/auth/login` | No | Body `{ email, password }`; `200 { token, user: { id, name, email } }`. Campos faltantes `400`; credenciales `401`. |
-| `GET /api/users/me` | Sí | `200` objeto de usuario consultado por ID; `404` si no existe. El modelo hace `SELECT *`. |
+| `POST /api/auth/register` | No | Body `{ name, email, password }`; `password` de 8 a 72 caracteres, email válido (se guarda en minúsculas). `201 { message, token, user: { id, name, email } }` (queda con la sesión iniciada). Errores: validación `400`, correo existente `409`. |
+| `POST /api/auth/login` | No | Body `{ email, password }`; `200 { token, user: { id, name, email } }`. Validación `400`; credenciales incorrectas `401 { message: "Correo o contraseña incorrectos" }`, el mismo mensaje y tiempo de respuesta exista o no el correo. |
+| `GET /api/users/me` | Sí | `200 { id, name, email, created_at }`; `404` si no existe. Nunca incluye `password_hash`. |
 | `GET /api/semesters` | Sí | `200` arreglo con `id`, `name`. |
 | `POST /api/semesters` | Sí | Body `{ name, period }`; `201 { message, semesterId }`. |
 | `GET /api/semesters/:semesterId/subjects` | Sí | `200` arreglo de materias con `id`, `user_id`, `semester_id`, `name`, `teacher_name`, `color`. |
@@ -48,5 +48,5 @@ Base de montaje en `backend/src/app.js`. Las rutas protegidas requieren `Authori
 
 Todos los servicios y las páginas de Login/Registro construyen sus URLs con `API_BASE_URL` de `services/http.ts`, que toma `VITE_API_URL` (por defecto `http://localhost:3000/api`). Los servicios nuevos (`noteService.ts`, `todoService.ts`, `gradeService.ts` y las funciones de detalle de `subjectService.ts`) usan `apiRequest` de `services/http.ts`, que lanza el `message` de error que devuelve la API. Los routers de materias, notas, tareas y calificaciones se montan en `/api`; el body JSON admite hasta 5 MB por la imagen de encabezado. Las llamadas autenticadas agregan el Bearer token.
 
-El registro del backend no devuelve el `token` ni el `user` que `Register.tsx` espera. Además, `/api/users/me` expone directamente el resultado de `SELECT *` del modelo, que incluye el hash de contraseña según el acceso de autenticación. El endpoint del grid devuelve todas las asignaciones del usuario, sin filtro de semestre.
+El endpoint del grid devuelve todas las asignaciones del usuario, sin filtro de semestre.
 
