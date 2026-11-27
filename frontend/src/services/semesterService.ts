@@ -1,4 +1,6 @@
-const API_URL = 'http://localhost:3000/api/semesters';
+import { API_BASE_URL } from './http';
+
+const API_URL = `${API_BASE_URL}/semesters`;
 
 export interface Semester {
     id: number;

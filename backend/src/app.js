@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const config = require("./config/env");
 const authRoutes = require("./routes/auth.routes");
 const userRoutes = require("./routes/user.routes");
 const semesterRoutes = require("./routes/semester.routes");
@@ -10,8 +11,9 @@ const todoRoutes = require("./routes/todo.routes");
 const gradeRoutes = require("./routes/grade.routes");
 const app = express();
 
+// Solo los orígenes listados en CORS_ORIGIN pueden llamar a la API desde un navegador.
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: config.corsOrigins,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));

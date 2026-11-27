@@ -1,6 +1,7 @@
 import type { Materia } from "../types/schedule";
+import { API_BASE_URL } from "./http";
 
-const API_URL = "http://localhost:3000/api/schedule";
+const API_URL = `${API_BASE_URL}/schedule`;
 
 export interface ScheduleItem {
     id?: number;

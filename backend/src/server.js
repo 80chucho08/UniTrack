@@ -1,11 +1,10 @@
-require("dotenv").config();
+// env debe cargarse antes que nada: valida la configuración y aborta si falta algo.
+const config = require("./config/env");
 const app = require("./app");
+const bd = require("./config/db");
 
-const PORT = process.env.PORT || 3000;
-
-app.listen(PORT, () => {
-  console.log(`Servidor corriendo en http://localhost:${PORT}`);
+app.listen(config.port, () => {
+  console.log(`Servidor corriendo en el puerto ${config.port} (${config.nodeEnv})`);
 });
 
-const bd = require("./config/db");
 bd.testConnection();
