@@ -35,6 +35,11 @@ const config = {
         port: Number(process.env.DB_PORT) || 3306,
     },
     jwtSecret: process.env.JWT_SECRET,
+    // Cuántos proxies hay delante de la app (Caddy/Nginx = 1). Con 0, req.ip es la IP
+    // que conecta directamente; detrás de un proxy sería la del proxy y el rate limit
+    // bloquearía a TODOS los usuarios a la vez. No lo subas si no hay proxy: un cliente
+    // podría falsear su IP con el header X-Forwarded-For.
+    trustProxy: Number(process.env.TRUST_PROXY) || 0,
     // Lista separada por comas, p. ej. "https://unitrack.com,https://staging.unitrack.com"
     corsOrigins: (process.env.CORS_ORIGIN || "http://localhost:5173")
         .split(",")

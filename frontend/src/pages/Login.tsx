@@ -38,20 +38,22 @@ function Login() {
                 body: JSON.stringify({ email, password })
             });
 
+            const data = await response.json().catch(() => null);
+
             if (!response.ok) {
-                throw new Error("Credenciales invalidas");
+                // p. ej. credenciales incorrectas (401) o demasiados intentos (429)
+                throw new Error(data?.message ?? "Email o contraseña incorrectos");
             }
 
-            const data: LoginResponse = await response.json();
+            const { token, user }: LoginResponse = data;
 
             //guardar token en localstorage
-            login(data.token, data.user);
-            console.log("Login exitoso", data);
+            login(token, user);
             navigate("/");
 
 
-        } catch {
-            setError("Email o contaseña incorrectos");
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "Email o contraseña incorrectos");
         } finally {
             setLoading(false);
         }
