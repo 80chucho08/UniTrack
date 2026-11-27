@@ -2,9 +2,10 @@
 const config = require("./config/env");
 const app = require("./app");
 const bd = require("./config/db");
+const logger = require("./config/logger");
 
 app.listen(config.port, () => {
-  console.log(`Servidor corriendo en el puerto ${config.port} (${config.nodeEnv})`);
+  logger.info({ port: config.port, env: config.nodeEnv }, "Servidor iniciado");
 });
 
 bd.testConnection();
@@ -13,11 +14,13 @@ bd.testConnection();
 // petición). El proceso queda en un estado desconocido: se registra y se termina, y
 // quien lo supervisa (nodemon ahora, Docker en la Fase 1) lo vuelve a levantar.
 process.on("unhandledRejection", (reason) => {
-  console.error("Promesa rechazada sin manejar:", reason);
+  logger.fatal({ err: reason }, "Promesa rechazada sin manejar");
+  logger.flush(); // vaciar el buffer antes de salir para no perder este último log
   process.exit(1);
 });
 
 process.on("uncaughtException", (error) => {
-  console.error("Excepción no capturada:", error);
+  logger.fatal({ err: error }, "Excepción no capturada");
+  logger.flush();
   process.exit(1);
 });
