@@ -10,8 +10,8 @@ Marca `[x]` al terminar cada punto y anota en **Bitácora** lo aprendido o decid
 - [x] **CORS** configurable por entorno (`CORS_ORIGIN`).
 - [x] **Validación de datos** con `zod` (middleware `validate` en las rutas).
 - [ ] **Contraseñas**: costo de `bcrypt`, ~~política mínima~~ (hecho: 8–72 caracteres), nunca devolver `password_hash` (quitar `SELECT *`), y login con mensaje genérico (hoy responde "Email no existe", lo que permite averiguar qué correos están registrados).
-- [ ] **Headers de seguridad** con `helmet`.
-- [ ] **Rate limiting** con `express-rate-limit` (estricto en `/api/auth/*`).
+- [x] **Headers de seguridad** con `helmet`.
+- [x] **Rate limiting** con `express-rate-limit` (estricto en `/api/auth/*`). Pendiente para Fase 1+: contadores en Redis si hay más de una instancia.
 - [ ] **Manejo de errores** centralizado (sin stack traces en producción).
 - [ ] **Logs estructurados** con `pino` y id por request.
 - [ ] **Healthcheck** `GET /api/health` que revise la BD.
@@ -69,3 +69,4 @@ Marca `[x]` al terminar cada punto y anota en **Bitácora** lo aprendido o decid
 - **2026-11-26** — Se crea el roadmap. Arranca la Fase 0 con variables de entorno y CORS.
 - **2026-11-26** — Hecho: `config/env.js` centraliza y valida la configuración (si falta un secret, el backend no arranca); CORS lee `CORS_ORIGIN`; el frontend usa `VITE_API_URL`; `.env.example` en ambos paquetes y `.env*` ignorados en git. Verificado: un origen no permitido no recibe `Access-Control-Allow-Origin`.
 - **2026-11-26** — Hecho: validación con zod. Middleware `validate` + esquemas en `validators/`; los controladores ya no validan a mano. Contraseña de 8–72 caracteres (72 es el límite real de bcrypt). Registro muestra el error del servidor. De paso: el horario aceptaba materias ajenas (autorización) y `dotenv` dependía de la carpeta actual. Verificado con 28 peticiones contra el backend local.
+- **2026-11-27** — Hecho: `helmet` y rate limiting (API 500/15 min; login 10 fallidos/15 min; registro 10/hora) con `TRUST_PROXY` configurable. Login y Registro muestran el mensaje del servidor (incluido el 429). Quitado un `console.log` que imprimía el token en la consola del navegador. Verificado: headers presentes, `X-Powered-By` ausente y el intento 11 de login responde 429 con CORS.

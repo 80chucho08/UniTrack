@@ -4,6 +4,8 @@ Base de montaje en `backend/src/app.js`. Las rutas protegidas requieren `Authori
 
 **Validación:** cada ruta valida `params` y `body` con esquemas de zod (`backend/src/validators/schemas.js`) mediante `middlewares/validate.middleware.js`, antes del controlador. Si algo no cumple responde `400 { message, errors: [{ field, message }] }`, donde `message` es el primer error. Los textos se recortan, `""` en campos opcionales se guarda como `null`, los números pueden llegar como string (`"90"`) y los campos no definidos en el esquema se descartan. Los ids de la URL deben ser enteros positivos.
 
+**Seguridad HTTP:** todas las respuestas llevan los headers de `helmet`. **Rate limiting** por IP (`middlewares/rateLimit.middleware.js`, contadores en memoria): `/api/*` 500 peticiones / 15 min; `POST /api/auth/login` 10 intentos **fallidos** / 15 min; `POST /api/auth/register` 10 / hora. Al superarlo: `429 { message }` con headers `RateLimit` y `Retry-After`. Detrás de un proxy hay que fijar `TRUST_PROXY` para que se cuente la IP real.
+
 Salvo donde se indica, los errores internos responden con `500` y `{ message }`; algunos endpoints también incluyen `error`.
 
 | Método y ruta | Auth | Entrada / respuesta exitosa |

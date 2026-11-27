@@ -1,5 +1,7 @@
 const express = require("express");
 const cors = require("cors");
+const helmet = require("helmet");
+const { apiLimiter } = require("./middlewares/rateLimit.middleware");
 const config = require("./config/env");
 const authRoutes = require("./routes/auth.routes");
 const userRoutes = require("./routes/user.routes");
@@ -11,12 +13,21 @@ const todoRoutes = require("./routes/todo.routes");
 const gradeRoutes = require("./routes/grade.routes");
 const app = express();
 
+app.set("trust proxy", config.trustProxy);
+
+// Headers de seguridad (quita X-Powered-By, añade Content-Security-Policy,
+// Strict-Transport-Security, X-Content-Type-Options, etc.)
+app.use(helmet());
+
 // Solo los orígenes listados en CORS_ORIGIN pueden llamar a la API desde un navegador.
 app.use(cors({
   origin: config.corsOrigins,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
+// Antes de leer el body: una petición rechazada no gasta tiempo en parsear 5 MB
+app.use("/api", apiLimiter);
 
 // Middleware para leer JSON (límite ampliado para la imagen de encabezado de materias)
 app.use(express.json({ limit: "5mb" }));
