@@ -4,7 +4,7 @@
 
 - `frontend/`: React 19, TypeScript, Vite, React Router, Tailwind CSS; componentes de iconos con `lucide-react`. El arrastre del horario usa eventos HTML nativos.
 - `backend/`: Node.js, Express 5 (CommonJS), `mysql2/promise`, `bcrypt`, `jsonwebtoken`, `dotenv` y `cors`.
-- No hay orquestación de raíz. El backend escucha en `PORT` o `3000`, carga dotenv y prueba MySQL al iniciar. Vite no configura proxy; el cliente usa `http://localhost:3000` y CORS permite `http://localhost:5173`.
+- No hay orquestación de raíz. El backend lee toda su configuración en `src/config/env.js` (único lugar que usa `process.env`; aborta si faltan `DB_HOST`, `DB_USER`, `DB_NAME` o `JWT_SECRET`), escucha en `PORT` o `3000` y prueba MySQL al iniciar. Vite no configura proxy; el cliente usa `VITE_API_URL` (por defecto `http://localhost:3000/api`) y CORS permite los orígenes de `CORS_ORIGIN` (por defecto `http://localhost:5173`). Las variables están documentadas en `backend/.env.example` y `frontend/.env.example`.
 - Scripts y dependencias exactas: `frontend/package.json` y `backend/package.json`.
 
 ## Frontend
@@ -17,7 +17,7 @@ Los servicios en `src/services/` encapsulan solicitudes para semestres, materias
 
 ## Backend y flujo
 
-`src/server.js` carga variables de entorno, inicia Express (`src/app.js`) y prueba la base de datos. `app.js` instala CORS y JSON, monta rutas bajo `/api` y expone `/` como prueba. Las rutas llaman controladores; estos validan/transforman la solicitud y delegan SQL a modelos. `config/db.js` exporta el pool compartido.
+`src/server.js` carga y valida la configuración (`config/env.js`), inicia Express (`src/app.js`) y prueba la base de datos. `app.js` instala CORS y JSON, monta rutas bajo `/api` y expone `/` como prueba. Las rutas llaman controladores; estos validan/transforman la solicitud y delegan SQL a modelos. `config/db.js` exporta el pool compartido.
 
 La autenticación de API usa JWT Bearer: `auth.controller.js` registra/autentica usuarios y `auth.middleware.js` verifica el token, dejando `{ id, email }` en `req.user`. Consulta [`api.md`](api.md) para el contrato observado.
 

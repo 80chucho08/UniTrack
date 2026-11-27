@@ -6,5 +6,10 @@ backend/.env
 frontend/node_modules
 frontend/dist
 
+# Variables de entorno: nunca se suben (los .env.example sí)
+.env
+.env.*
+!.env.example
+
 # General
 .DS_Store

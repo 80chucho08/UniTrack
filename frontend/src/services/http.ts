@@ -1,4 +1,6 @@
-export const API_BASE_URL = 'http://localhost:3000/api';
+// URL de la API según el entorno. Vite la inyecta en tiempo de build desde
+// VITE_API_URL (ver frontend/.env.example); en desarrollo cae a localhost.
+export const API_BASE_URL: string = import.meta.env.VITE_API_URL ?? 'http://localhost:3000/api';
 
 // fetch autenticado con JSON. Si la API responde con error, lanza su { message }
 // (o el mensaje por defecto si no hay uno).

@@ -1,6 +1,6 @@
 # API observada
 
-Base de montaje en `backend/src/app.js`. Las rutas protegidas requieren `Authorization: Bearer <JWT>`; el token se firma con `JWT_SECRET`, contiene `id` y `email` y expira en un día. El API acepta JSON. CORS permite `http://localhost:5173`.
+Base de montaje en `backend/src/app.js`. Las rutas protegidas requieren `Authorization: Bearer <JWT>`; el token se firma con `JWT_SECRET`, contiene `id` y `email` y expira en un día. El API acepta JSON. CORS permite los orígenes de `CORS_ORIGIN` (separados por comas; por defecto `http://localhost:5173`).
 
 Los campos descritos reflejan las lecturas/escrituras del código, no validaciones de esquema. Salvo donde se indica, los errores internos responden con `500` y `{ message }`; algunos endpoints también incluyen `error`.
 
@@ -38,7 +38,7 @@ Los campos descritos reflejan las lecturas/escrituras del código, no validacion
 
 ## Consumo frontend y advertencias de contrato
 
-`semesterService.ts`, `subjectService.ts` y `scheduleService.ts` apuntan a `http://localhost:3000`. Los servicios nuevos (`noteService.ts`, `todoService.ts`, `gradeService.ts` y las funciones de detalle de `subjectService.ts`) usan `apiRequest` de `services/http.ts`, que lanza el `message` de error que devuelve la API. Los routers de materias, notas, tareas y calificaciones se montan en `/api`; el body JSON admite hasta 5 MB por la imagen de encabezado. Login y registro tienen URL codificada en sus páginas. Las llamadas autenticadas agregan el Bearer token.
+Todos los servicios y las páginas de Login/Registro construyen sus URLs con `API_BASE_URL` de `services/http.ts`, que toma `VITE_API_URL` (por defecto `http://localhost:3000/api`). Los servicios nuevos (`noteService.ts`, `todoService.ts`, `gradeService.ts` y las funciones de detalle de `subjectService.ts`) usan `apiRequest` de `services/http.ts`, que lanza el `message` de error que devuelve la API. Los routers de materias, notas, tareas y calificaciones se montan en `/api`; el body JSON admite hasta 5 MB por la imagen de encabezado. Las llamadas autenticadas agregan el Bearer token.
 
 El registro del backend no devuelve el `token` ni el `user` que `Register.tsx` espera. Además, `/api/users/me` expone directamente el resultado de `SELECT *` del modelo, que incluye el hash de contraseña según el acceso de autenticación. El endpoint del grid devuelve todas las asignaciones del usuario, sin filtro de semestre.
 
