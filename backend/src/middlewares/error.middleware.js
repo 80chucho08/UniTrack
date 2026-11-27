@@ -31,10 +31,12 @@ const errorHandler = (err, req, res, next) => {
         return res.status(409).json({ message: "El registro ya existe" });
     }
 
-    // Cualquier otro error es un fallo nuestro: se registra completo y se responde genérico
-    console.error(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl}`, err);
+    // Cualquier otro error es un fallo nuestro: se registra completo y se responde genérico.
+    // pino-http incluye res.err (con stack) en el log de esta petición, con su id.
+    res.err = err;
 
-    const body = { message: "Error interno del servidor" };
+    // requestId: el usuario puede reportarlo y lo buscas en los logs
+    const body = { message: "Error interno del servidor", requestId: req.id };
     if (!config.isProduction) {
         body.detail = err.message; // solo en desarrollo, para depurar desde el frontend
     }

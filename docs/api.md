@@ -4,16 +4,20 @@ Base de montaje en `backend/src/app.js`. Las rutas protegidas requieren `Authori
 
 **Validación:** cada ruta valida `params` y `body` con esquemas de zod (`backend/src/validators/schemas.js`) mediante `middlewares/validate.middleware.js`, antes del controlador. Si algo no cumple responde `400 { message, errors: [{ field, message }] }`, donde `message` es el primer error. Los textos se recortan, `""` en campos opcionales se guarda como `null`, los números pueden llegar como string (`"90"`) y los campos no definidos en el esquema se descartan. Los ids de la URL deben ser enteros positivos.
 
-**Seguridad HTTP:** todas las respuestas llevan los headers de `helmet`. **Rate limiting** por IP (`middlewares/rateLimit.middleware.js`, contadores en memoria): `/api/*` 500 peticiones / 15 min; `POST /api/auth/login` 10 intentos **fallidos** / 15 min; `POST /api/auth/register` 10 / hora. Al superarlo: `429 { message }` con headers `RateLimit` y `Retry-After`. Detrás de un proxy hay que fijar `TRUST_PROXY` para que se cuente la IP real.
+**Seguridad HTTP:** todas las respuestas llevan los headers de `helmet`. **Rate limiting** por IP (`middlewares/rateLimit.middleware.js`, contadores en memoria): `/api/*` 500 peticiones / 15 min (excepto `/api/health`, montado antes del límite); `POST /api/auth/login` 10 intentos **fallidos** / 15 min; `POST /api/auth/register` 10 / hora. Al superarlo: `429 { message }` con headers `RateLimit` y `Retry-After`. Detrás de un proxy hay que fijar `TRUST_PROXY` para que se cuente la IP real.
 
-**Errores:** los centraliza `middlewares/error.middleware.js`. Ruta inexistente → `404 { message }`; JSON malformado → `400`; body de más de 5 MB → `413`; duplicado en índice único de MySQL → `409`; cualquier otro fallo → `500 { message: "Error interno del servidor" }` (fuera de producción incluye además `detail` con el mensaje técnico). El detalle completo solo se escribe en el log del servidor.
+**Errores:** los centraliza `middlewares/error.middleware.js`. Ruta inexistente → `404 { message }`; JSON malformado → `400`; body de más de 5 MB → `413`; duplicado en índice único de MySQL → `409`; cualquier otro fallo → `500 { message: "Error interno del servidor", requestId }` (fuera de producción incluye además `detail` con el mensaje técnico). El detalle completo solo se escribe en el log del servidor.
+
+**Request id:** toda respuesta lleva `X-Request-Id` (expuesto por CORS). Si la petición trae un `X-Request-Id` válido (8–64 caracteres alfanuméricos o `-`) se reutiliza; si no, se genera un UUID. Sirve para encontrar la petición en los logs.
 
 | Método y ruta | Auth | Entrada / respuesta exitosa |
 |---|---|---|
 | `GET /` | No | `{ message }` de prueba. |
-| `POST /api/auth/register` | No | Body `{ name, email, password }`; `password` de 8 a 72 caracteres, email válido (se guarda en minúsculas). `201 { message }`. Errores: validación `400`, correo existente `409`. |
-| `POST /api/auth/login` | No | Body `{ email, password }`; `200 { token, user: { id, name, email } }`. Campos faltantes `400`; credenciales `401`. |
-| `GET /api/users/me` | Sí | `200` objeto de usuario consultado por ID; `404` si no existe. El modelo hace `SELECT *`. |
+| `GET /api/health/live` | No | Liveness: `200 { status: "ok" }` si el proceso responde; no consulta la BD. |
+| `GET /api/health` | No | Readiness: `SELECT 1` con límite de 2 s. `200 { status: "ok", db: "ok", uptime }` o `503 { status: "error", db: "error" }` (el motivo solo va al log). |
+| `POST /api/auth/register` | No | Body `{ name, email, password }`; `password` de 8 a 72 caracteres, email válido (se guarda en minúsculas). `201 { message, token, user: { id, name, email } }` (queda con la sesión iniciada). Errores: validación `400`, correo existente `409`. |
+| `POST /api/auth/login` | No | Body `{ email, password }`; `200 { token, user: { id, name, email } }`. Validación `400`; credenciales incorrectas `401 { message: "Correo o contraseña incorrectos" }`, el mismo mensaje y tiempo de respuesta exista o no el correo. |
+| `GET /api/users/me` | Sí | `200 { id, name, email, created_at }`; `404` si no existe. Nunca incluye `password_hash`. |
 | `GET /api/semesters` | Sí | `200` arreglo con `id`, `name`. |
 | `POST /api/semesters` | Sí | Body `{ name, period }`; `201 { message, semesterId }`. |
 | `GET /api/semesters/:semesterId/subjects` | Sí | `200` arreglo de materias con `id`, `user_id`, `semester_id`, `name`, `teacher_name`, `color`. |
@@ -44,5 +48,5 @@ Base de montaje en `backend/src/app.js`. Las rutas protegidas requieren `Authori
 
 Todos los servicios y las páginas de Login/Registro construyen sus URLs con `API_BASE_URL` de `services/http.ts`, que toma `VITE_API_URL` (por defecto `http://localhost:3000/api`). Los servicios nuevos (`noteService.ts`, `todoService.ts`, `gradeService.ts` y las funciones de detalle de `subjectService.ts`) usan `apiRequest` de `services/http.ts`, que lanza el `message` de error que devuelve la API. Los routers de materias, notas, tareas y calificaciones se montan en `/api`; el body JSON admite hasta 5 MB por la imagen de encabezado. Las llamadas autenticadas agregan el Bearer token.
 
-El registro del backend no devuelve el `token` ni el `user` que `Register.tsx` espera. Además, `/api/users/me` expone directamente el resultado de `SELECT *` del modelo, que incluye el hash de contraseña según el acceso de autenticación. El endpoint del grid devuelve todas las asignaciones del usuario, sin filtro de semestre.
+El endpoint del grid devuelve todas las asignaciones del usuario, sin filtro de semestre.
 

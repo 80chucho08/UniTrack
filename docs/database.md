@@ -30,7 +30,7 @@ No es posible confirmar relaciones físicas ni restricciones a partir del códig
 
 ## Modelos
 
-- `user.model.js`: inserta usuario con timestamps `NOW()`; búsqueda por email/ID devuelve la primera fila (`SELECT *`).
+- `user.model.js`: inserta usuario con timestamps `NOW()`; las búsquedas por email/ID devuelven solo columnas públicas (`id`, `name`, `email`, `created_at`). `getCredentialsByEmail` es la única que lee `password_hash` (solo para el login) y `updatePasswordHash` re-hashea al costo actual de bcrypt (12).
 - `semester.model.js`: lista ID/nombre por usuario; inserta nombre, periodo y timestamp.
 - `subject.model.js`: lista materias por usuario y semestre; detalle con datos del semestre; crea, actualiza, cambia `header_image` y borra (transacción que primero borra sus `todos`). `subjectBelongsToUser` es la comprobación de propiedad que usan notas, tareas y calificaciones.
 - `schedule.model.js`: lista materias de un semestre, inserta asignación, borra por ID y usuario, lista las asignaciones del usuario unidas a materia o las clases de una materia.

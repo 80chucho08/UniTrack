@@ -27,6 +27,8 @@ const config = {
     nodeEnv,
     isProduction: nodeEnv === "production",
     port: Number(process.env.PORT) || 3000,
+    // trace | debug | info | warn | error | fatal (más bajo = más detalle)
+    logLevel: process.env.LOG_LEVEL || (nodeEnv === "production" ? "info" : "debug"),
     db: {
         host: process.env.DB_HOST,
         user: process.env.DB_USER,

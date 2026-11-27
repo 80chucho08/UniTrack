@@ -3,6 +3,7 @@ const cors = require("cors");
 const helmet = require("helmet");
 const { apiLimiter } = require("./middlewares/rateLimit.middleware");
 const { notFound, errorHandler } = require("./middlewares/error.middleware");
+const requestLogger = require("./middlewares/requestLogger.middleware");
 const config = require("./config/env");
 const authRoutes = require("./routes/auth.routes");
 const userRoutes = require("./routes/user.routes");
@@ -12,9 +13,13 @@ const scheduleRoutes = require("./routes/schedule.routes");
 const noteRoutes = require("./routes/note.routes");
 const todoRoutes = require("./routes/todo.routes");
 const gradeRoutes = require("./routes/grade.routes");
+const healthRoutes = require("./routes/health.routes");
 const app = express();
 
 app.set("trust proxy", config.trustProxy);
+
+// Primero: así se registra TODA petición, incluso las que luego rechaza el rate limit
+app.use(requestLogger);
 
 // Headers de seguridad (quita X-Powered-By, añade Content-Security-Policy,
 // Strict-Transport-Security, X-Content-Type-Options, etc.)
@@ -24,8 +29,12 @@ app.use(helmet());
 app.use(cors({
   origin: config.corsOrigins,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  exposedHeaders: ['X-Request-Id', 'Retry-After'] // headers que el frontend puede leer
 }));
+
+// Healthchecks antes del rate limit: los monitores consultan seguido y nunca deben recibir 429
+app.use("/api/health", healthRoutes);
 
 // Antes de leer el body: una petición rechazada no gasta tiempo en parsear 5 MB
 app.use("/api", apiLimiter);

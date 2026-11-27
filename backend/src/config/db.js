@@ -1,5 +1,6 @@
 const mysql = require("mysql2/promise");
 const config = require("./env");
+const logger = require("./logger");
 
 const pool = mysql.createPool({
     host: config.db.host,
@@ -14,10 +15,10 @@ const pool = mysql.createPool({
 
 const testConnection = async () => {
     try {
-        const [rows] = await pool.query("SELECT 1 + 1 AS RESULT");
-        console.log("Conexion con BD creada", rows);
+        await pool.query("SELECT 1");
+        logger.info({ host: config.db.host, database: config.db.name }, "Conexión con la BD establecida");
     } catch (error) {
-        console.log("error al conectar bd", error);
+        logger.error({ err: error }, "No se pudo conectar a la BD");
     }
 };
 
