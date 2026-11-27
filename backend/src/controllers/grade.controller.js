@@ -1,30 +1,7 @@
 const gradeModel = require("../models/grade.model");
 const subjectModel = require("../models/subject.model");
 
-const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
-
-// Valida y normaliza los campos de una calificación. Devuelve { data } o { error }.
-const validateGrade = ({ name, value, weight, date }) => {
-    const cleanName = (name || "").trim();
-    if (!cleanName) return { error: "El nombre de la evaluación es obligatorio" };
-
-    const numValue = Number(value);
-    if (value === "" || value === null || value === undefined || !Number.isFinite(numValue) || numValue < 0 || numValue > 100) {
-        return { error: "La calificación debe ser un número entre 0 y 100" };
-    }
-
-    const numWeight = Number(weight);
-    if (weight === "" || weight === null || weight === undefined || !Number.isFinite(numWeight) || numWeight < 0 || numWeight > 100) {
-        return { error: "El porcentaje debe ser un número entre 0 y 100" };
-    }
-
-    const cleanDate = date === undefined || date === null || date === "" ? null : date;
-    if (cleanDate !== null && !DATE_REGEX.test(cleanDate)) {
-        return { error: "La fecha debe tener formato YYYY-MM-DD" };
-    }
-
-    return { data: { name: cleanName, value: numValue, weight: numWeight, date: cleanDate } };
-};
+// Los bodies llegan validados por validators/schemas.js (createGrade / updateGrade)
 
 const getGrades = async (req, res) => {
     try {
@@ -48,16 +25,11 @@ const createGrade = async (req, res) => {
         const userId = req.user.id;
         const { subjectId } = req.params;
 
-        const { data, error } = validateGrade(req.body);
-        if (error) {
-            return res.status(400).json({ message: error });
-        }
-
         if (!(await subjectModel.subjectBelongsToUser(userId, subjectId))) {
             return res.status(404).json({ message: "Materia no encontrada" });
         }
 
-        const gradeId = await gradeModel.addGrade(userId, subjectId, data);
+        const gradeId = await gradeModel.addGrade(userId, subjectId, req.body);
         const grade = await gradeModel.getGradeById(userId, gradeId);
 
         res.status(201).json(grade);
@@ -78,12 +50,9 @@ const updateGrade = async (req, res) => {
             return res.status(404).json({ message: "Calificación no encontrada" });
         }
 
-        const { data, error } = validateGrade({ ...current, ...req.body });
-        if (error) {
-            return res.status(400).json({ message: error });
-        }
-
-        await gradeModel.updateGrade(userId, gradeId, data);
+        // Edición parcial: lo que no viene en el body conserva su valor
+        const { name, value, weight, date } = current;
+        await gradeModel.updateGrade(userId, gradeId, { name, value, weight, date, ...req.body });
         const grade = await gradeModel.getGradeById(userId, gradeId);
 
         res.status(200).json(grade);

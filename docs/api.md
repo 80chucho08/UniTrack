@@ -2,12 +2,14 @@
 
 Base de montaje en `backend/src/app.js`. Las rutas protegidas requieren `Authorization: Bearer <JWT>`; el token se firma con `JWT_SECRET`, contiene `id` y `email` y expira en un día. El API acepta JSON. CORS permite los orígenes de `CORS_ORIGIN` (separados por comas; por defecto `http://localhost:5173`).
 
-Los campos descritos reflejan las lecturas/escrituras del código, no validaciones de esquema. Salvo donde se indica, los errores internos responden con `500` y `{ message }`; algunos endpoints también incluyen `error`.
+**Validación:** cada ruta valida `params` y `body` con esquemas de zod (`backend/src/validators/schemas.js`) mediante `middlewares/validate.middleware.js`, antes del controlador. Si algo no cumple responde `400 { message, errors: [{ field, message }] }`, donde `message` es el primer error. Los textos se recortan, `""` en campos opcionales se guarda como `null`, los números pueden llegar como string (`"90"`) y los campos no definidos en el esquema se descartan. Los ids de la URL deben ser enteros positivos.
+
+Salvo donde se indica, los errores internos responden con `500` y `{ message }`; algunos endpoints también incluyen `error`.
 
 | Método y ruta | Auth | Entrada / respuesta exitosa |
 |---|---|---|
 | `GET /` | No | `{ message }` de prueba. |
-| `POST /api/auth/register` | No | Body `{ name, email, password }`; `201 { message }`. Errores: campos faltantes `400`, correo existente `409`. |
+| `POST /api/auth/register` | No | Body `{ name, email, password }`; `password` de 8 a 72 caracteres, email válido (se guarda en minúsculas). `201 { message }`. Errores: validación `400`, correo existente `409`. |
 | `POST /api/auth/login` | No | Body `{ email, password }`; `200 { token, user: { id, name, email } }`. Campos faltantes `400`; credenciales `401`. |
 | `GET /api/users/me` | Sí | `200` objeto de usuario consultado por ID; `404` si no existe. El modelo hace `SELECT *`. |
 | `GET /api/semesters` | Sí | `200` arreglo con `id`, `name`. |
@@ -33,7 +35,7 @@ Los campos descritos reflejan las lecturas/escrituras del código, no validacion
 | `GET /api/schedule/subject/:subjectId` | Sí | `200` clases de la materia (`schedule_id`, `day`, `start_time`/`end_time` `HH:mm`, `classroom`) ordenadas por día y hora. |
 | `GET /api/schedule/subjects/:semesterId` | Sí | `200` arreglo de materias con ID, propietario, semestre, nombre y color. |
 | `GET /api/schedule/grid` | Sí | `200` asignaciones del usuario: `schedule_id`, día, horas, aula y datos de materia. |
-| `POST /api/schedule/grid` | Sí | Body requiere `subject_id`, `day`, `start_time`; también lee `end_time`, `classroom`. `201 { message, insertedId }`. |
+| `POST /api/schedule/grid` | Sí | Body requiere `subject_id` (materia del usuario), `day` (`Monday`–`Saturday`), `start_time` `HH:MM[:SS]`; opcionales `end_time` (posterior al inicio) y `classroom`. `201 { message, insertedId }`; `404` si la materia no es del usuario. |
 | `DELETE /api/schedule/grid/:id` | Sí | Borra por ID y usuario; `200 { message }` o `404` si no se afectó fila. |
 
 ## Consumo frontend y advertencias de contrato

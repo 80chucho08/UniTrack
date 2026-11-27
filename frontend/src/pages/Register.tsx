@@ -27,16 +27,17 @@ function Register() {
         body: JSON.stringify({ name, email, password }),
       });
 
-      if (!response.ok) {
-        throw new Error("Error al registrar");
-      }
+      const data = await response.json().catch(() => null);
 
-      const data = await response.json();
+      if (!response.ok) {
+        // El backend explica qué campo falló (p. ej. contraseña de menos de 8 caracteres)
+        throw new Error(data?.message ?? "No se pudo crear la cuenta");
+      }
 
       login(data.token, data.user);
       navigate("/");
-    } catch {
-      setError("No se pudo crear la cuenta");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "No se pudo crear la cuenta");
     } finally {
       setLoading(false);
     }
@@ -80,6 +81,8 @@ function Register() {
           <input
             className="w-full border rounded-md px-3 py-2"
             type="password"
+            minLength={8}
+            maxLength={72}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required

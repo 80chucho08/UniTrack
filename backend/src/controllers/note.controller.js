@@ -22,12 +22,7 @@ const createNote = async (req, res) => {
     try {
         const userId = req.user.id;
         const { subjectId } = req.params;
-        const title = (req.body.title || "").trim();
-        const content = req.body.content ?? null;
-
-        if (!title) {
-            return res.status(400).json({ message: "El título de la nota es obligatorio" });
-        }
+        const { title, content = null } = req.body; // validado por schemas.createNote
 
         if (!(await subjectModel.subjectBelongsToUser(userId, subjectId))) {
             return res.status(404).json({ message: "Materia no encontrada" });
@@ -53,12 +48,9 @@ const updateNote = async (req, res) => {
             return res.status(404).json({ message: "Nota no encontrada" });
         }
 
-        const title = "title" in req.body ? (req.body.title || "").trim() : current.title;
+        // Edición parcial: lo que no viene en el body conserva su valor
+        const title = "title" in req.body ? req.body.title : current.title;
         const content = "content" in req.body ? req.body.content : current.content;
-
-        if (!title) {
-            return res.status(400).json({ message: "El título de la nota es obligatorio" });
-        }
 
         await noteModel.updateNote(userId, noteId, title, content);
         const note = await noteModel.getNoteById(userId, noteId);

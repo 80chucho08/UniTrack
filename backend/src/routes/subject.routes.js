@@ -2,24 +2,30 @@ const express = require("express");
 const router = express.Router();
 const authMiddleware = require("../middlewares/auth.middleware");
 const subjectController = require("../controllers/subject.controller");
+const validate = require("../middlewares/validate.middleware");
+const schemas = require("../validators/schemas");
+const { idParams } = require("../validators/common");
+
+const semesterParams = idParams("semesterId", "id de semestre");
+const subjectParams = idParams("subjectId", "id de materia");
 
 // Este router se monta en /api (ver app.js)
 
 // obtener subjects de un usuario
-router.get("/semesters/:semesterId/subjects", authMiddleware, subjectController.getSubjects);
+router.get("/semesters/:semesterId/subjects", authMiddleware, validate({ params: semesterParams }), subjectController.getSubjects);
 
 // crear una nueva materia
-router.post("/semesters/:semesterId/subjects", authMiddleware, subjectController.createSubject);
+router.post("/semesters/:semesterId/subjects", authMiddleware, validate({ params: semesterParams, body: schemas.createSubject }), subjectController.createSubject);
 
 // todas las materias del usuario (con nombre de semestre)
 router.get("/subjects", authMiddleware, subjectController.getAllSubjects);
 
 // detalle, edición y borrado de una materia
-router.get("/subjects/:subjectId", authMiddleware, subjectController.getSubjectById);
-router.put("/subjects/:subjectId", authMiddleware, subjectController.updateSubject);
-router.delete("/subjects/:subjectId", authMiddleware, subjectController.deleteSubject);
+router.get("/subjects/:subjectId", authMiddleware, validate({ params: subjectParams }), subjectController.getSubjectById);
+router.put("/subjects/:subjectId", authMiddleware, validate({ params: subjectParams, body: schemas.updateSubject }), subjectController.updateSubject);
+router.delete("/subjects/:subjectId", authMiddleware, validate({ params: subjectParams }), subjectController.deleteSubject);
 
 // imagen de encabezado del dashboard de la materia
-router.put("/subjects/:subjectId/header-image", authMiddleware, subjectController.updateHeaderImage);
+router.put("/subjects/:subjectId/header-image", authMiddleware, validate({ params: subjectParams, body: schemas.headerImage }), subjectController.updateHeaderImage);
 
 module.exports = router;

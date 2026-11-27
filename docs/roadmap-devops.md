@@ -8,8 +8,8 @@ Marca `[x]` al terminar cada punto y anota en **Bitácora** lo aprendido o decid
 
 - [x] **Variables de entorno**: configuración centralizada y validada en `backend/src/config/env.js`; `.env.example` en backend y frontend; `VITE_API_URL` en el frontend.
 - [x] **CORS** configurable por entorno (`CORS_ORIGIN`).
-- [ ] **Validación de datos** con `zod` en los controladores.
-- [ ] **Contraseñas**: costo de `bcrypt`, política mínima, nunca devolver `password_hash` (quitar `SELECT *`), y login con mensaje genérico (hoy responde "Email no existe", lo que permite averiguar qué correos están registrados).
+- [x] **Validación de datos** con `zod` (middleware `validate` en las rutas).
+- [ ] **Contraseñas**: costo de `bcrypt`, ~~política mínima~~ (hecho: 8–72 caracteres), nunca devolver `password_hash` (quitar `SELECT *`), y login con mensaje genérico (hoy responde "Email no existe", lo que permite averiguar qué correos están registrados).
 - [ ] **Headers de seguridad** con `helmet`.
 - [ ] **Rate limiting** con `express-rate-limit` (estricto en `/api/auth/*`).
 - [ ] **Manejo de errores** centralizado (sin stack traces en producción).
@@ -56,7 +56,7 @@ Marca `[x]` al terminar cada punto y anota en **Bitácora** lo aprendido o decid
 
 - [ ] Login con Google (ID token verificado en backend → JWT propio).
 - [ ] JWT en cookie `httpOnly` + `Secure` + `SameSite`, con refresh tokens.
-- [ ] Auditoría de autorización: cada endpoint valida el dueño (`user_id`).
+- [ ] Auditoría de autorización: cada endpoint valida el dueño (`user_id`). Ya corregido: `POST /api/schedule/grid` aceptaba materias de otros usuarios.
 
 ## Fase 7 — Monitoreo, logs y errores
 
@@ -68,3 +68,4 @@ Marca `[x]` al terminar cada punto y anota en **Bitácora** lo aprendido o decid
 
 - **2026-11-26** — Se crea el roadmap. Arranca la Fase 0 con variables de entorno y CORS.
 - **2026-11-26** — Hecho: `config/env.js` centraliza y valida la configuración (si falta un secret, el backend no arranca); CORS lee `CORS_ORIGIN`; el frontend usa `VITE_API_URL`; `.env.example` en ambos paquetes y `.env*` ignorados en git. Verificado: un origen no permitido no recibe `Access-Control-Allow-Origin`.
+- **2026-11-26** — Hecho: validación con zod. Middleware `validate` + esquemas en `validators/`; los controladores ya no validan a mano. Contraseña de 8–72 caracteres (72 es el límite real de bcrypt). Registro muestra el error del servidor. De paso: el horario aceptaba materias ajenas (autorización) y `dotenv` dependía de la carpeta actual. Verificado con 28 peticiones contra el backend local.

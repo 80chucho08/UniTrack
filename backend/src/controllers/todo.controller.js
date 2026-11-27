@@ -1,15 +1,7 @@
 const todoModel = require("../models/todo.model");
 const subjectModel = require("../models/subject.model");
 
-const STATUSES = ["pending", "completed"];
-const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
-
-// Normaliza la fecha: "" o null -> null; valida formato YYYY-MM-DD
-const parseDueDate = (value) => {
-    if (value === undefined || value === null || value === "") return { value: null };
-    if (!DATE_REGEX.test(value)) return { error: "La fecha debe tener formato YYYY-MM-DD" };
-    return { value };
-};
+// Los bodies llegan validados por validators/schemas.js (createTodo / updateTodo)
 
 const getTodos = async (req, res) => {
     try {
@@ -45,20 +37,8 @@ const getAllTodos = async (req, res) => {
 const createTodo = async (req, res) => {
     try {
         const userId = req.user.id;
-        const rawSubjectId = req.params.subjectId ?? req.body.subject_id;
-        const subjectId = rawSubjectId === undefined || rawSubjectId === null || rawSubjectId === ""
-            ? null
-            : rawSubjectId;
-        const title = (req.body.title || "").trim();
-
-        if (!title) {
-            return res.status(400).json({ message: "El título de la tarea es obligatorio" });
-        }
-
-        const dueDate = parseDueDate(req.body.due_date);
-        if (dueDate.error) {
-            return res.status(400).json({ message: dueDate.error });
-        }
+        const subjectId = req.params.subjectId ?? req.body.subject_id ?? null;
+        const { title, description = null, due_date = null } = req.body;
 
         if (subjectId !== null && !(await subjectModel.subjectBelongsToUser(userId, subjectId))) {
             return res.status(404).json({ message: "Materia no encontrada" });
@@ -66,8 +46,8 @@ const createTodo = async (req, res) => {
 
         const todoId = await todoModel.addTodo(userId, subjectId, {
             title,
-            description: req.body.description || null,
-            due_date: dueDate.value
+            description,
+            due_date
         });
         const todo = await todoModel.getTodoById(userId, todoId);
 
@@ -90,30 +70,14 @@ const updateTodo = async (req, res) => {
             return res.status(404).json({ message: "Tarea no encontrada" });
         }
 
-        const title = "title" in body ? (body.title || "").trim() : current.title;
-        if (!title) {
-            return res.status(400).json({ message: "El título de la tarea es obligatorio" });
-        }
-
-        const status = "status" in body ? body.status : current.status;
-        if (!STATUSES.includes(status)) {
-            return res.status(400).json({ message: "Estado inválido (pending o completed)" });
-        }
-
-        let dueDate = current.due_date;
-        if ("due_date" in body) {
-            const parsed = parseDueDate(body.due_date);
-            if (parsed.error) {
-                return res.status(400).json({ message: parsed.error });
-            }
-            dueDate = parsed.value;
-        }
+        // Edición parcial (p. ej. solo { status }): lo que no viene se conserva
+        const pick = (field) => (field in body ? body[field] : current[field]);
 
         await todoModel.updateTodo(userId, todoId, {
-            title,
-            description: "description" in body ? body.description || null : current.description,
-            due_date: dueDate,
-            status
+            title: pick("title"),
+            description: pick("description"),
+            due_date: pick("due_date"),
+            status: pick("status")
         });
         const todo = await todoModel.getTodoById(userId, todoId);
 
