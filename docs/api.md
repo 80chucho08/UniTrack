@@ -4,7 +4,7 @@ Base de montaje en `backend/src/app.js`. Las rutas protegidas requieren `Authori
 
 **Validación:** cada ruta valida `params` y `body` con esquemas de zod (`backend/src/validators/schemas.js`) mediante `middlewares/validate.middleware.js`, antes del controlador. Si algo no cumple responde `400 { message, errors: [{ field, message }] }`, donde `message` es el primer error. Los textos se recortan, `""` en campos opcionales se guarda como `null`, los números pueden llegar como string (`"90"`) y los campos no definidos en el esquema se descartan. Los ids de la URL deben ser enteros positivos.
 
-**Seguridad HTTP:** todas las respuestas llevan los headers de `helmet`. **Rate limiting** por IP (`middlewares/rateLimit.middleware.js`, contadores en memoria): `/api/*` 500 peticiones / 15 min; `POST /api/auth/login` 10 intentos **fallidos** / 15 min; `POST /api/auth/register` 10 / hora. Al superarlo: `429 { message }` con headers `RateLimit` y `Retry-After`. Detrás de un proxy hay que fijar `TRUST_PROXY` para que se cuente la IP real.
+**Seguridad HTTP:** todas las respuestas llevan los headers de `helmet`. **Rate limiting** por IP (`middlewares/rateLimit.middleware.js`, contadores en memoria): `/api/*` 500 peticiones / 15 min (excepto `/api/health`, montado antes del límite); `POST /api/auth/login` 10 intentos **fallidos** / 15 min; `POST /api/auth/register` 10 / hora. Al superarlo: `429 { message }` con headers `RateLimit` y `Retry-After`. Detrás de un proxy hay que fijar `TRUST_PROXY` para que se cuente la IP real.
 
 **Errores:** los centraliza `middlewares/error.middleware.js`. Ruta inexistente → `404 { message }`; JSON malformado → `400`; body de más de 5 MB → `413`; duplicado en índice único de MySQL → `409`; cualquier otro fallo → `500 { message: "Error interno del servidor", requestId }` (fuera de producción incluye además `detail` con el mensaje técnico). El detalle completo solo se escribe en el log del servidor.
 
@@ -13,6 +13,8 @@ Base de montaje en `backend/src/app.js`. Las rutas protegidas requieren `Authori
 | Método y ruta | Auth | Entrada / respuesta exitosa |
 |---|---|---|
 | `GET /` | No | `{ message }` de prueba. |
+| `GET /api/health/live` | No | Liveness: `200 { status: "ok" }` si el proceso responde; no consulta la BD. |
+| `GET /api/health` | No | Readiness: `SELECT 1` con límite de 2 s. `200 { status: "ok", db: "ok", uptime }` o `503 { status: "error", db: "error" }` (el motivo solo va al log). |
 | `POST /api/auth/register` | No | Body `{ name, email, password }`; `password` de 8 a 72 caracteres, email válido (se guarda en minúsculas). `201 { message }`. Errores: validación `400`, correo existente `409`. |
 | `POST /api/auth/login` | No | Body `{ email, password }`; `200 { token, user: { id, name, email } }`. Campos faltantes `400`; credenciales `401`. |
 | `GET /api/users/me` | Sí | `200` objeto de usuario consultado por ID; `404` si no existe. El modelo hace `SELECT *`. |

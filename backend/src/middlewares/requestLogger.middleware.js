@@ -15,6 +15,9 @@ const requestLogger = pinoHttp({
         res.setHeader("X-Request-Id", id); // el cliente lo ve y puede reportarlo
         return id;
     },
+    // Los healthchecks llegan cada pocos segundos: registrarlos todos taparía lo importante.
+    // Si fallan, el propio endpoint escribe un log de error.
+    autoLogging: { ignore: (req) => req.url.startsWith("/api/health") },
     // Nivel según el resultado: 5xx es un fallo nuestro, 4xx del cliente
     customLogLevel: (req, res, err) => {
         if (err || res.statusCode >= 500) return "error";
