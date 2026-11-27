@@ -13,6 +13,7 @@ const scheduleRoutes = require("./routes/schedule.routes");
 const noteRoutes = require("./routes/note.routes");
 const todoRoutes = require("./routes/todo.routes");
 const gradeRoutes = require("./routes/grade.routes");
+const healthRoutes = require("./routes/health.routes");
 const app = express();
 
 app.set("trust proxy", config.trustProxy);
@@ -31,6 +32,9 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization'],
   exposedHeaders: ['X-Request-Id', 'Retry-After'] // headers que el frontend puede leer
 }));
+
+// Healthchecks antes del rate limit: los monitores consultan seguido y nunca deben recibir 429
+app.use("/api/health", healthRoutes);
 
 // Antes de leer el body: una petición rechazada no gasta tiempo en parsear 5 MB
 app.use("/api", apiLimiter);
