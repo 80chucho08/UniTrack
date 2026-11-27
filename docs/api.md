@@ -6,7 +6,9 @@ Base de montaje en `backend/src/app.js`. Las rutas protegidas requieren `Authori
 
 **Seguridad HTTP:** todas las respuestas llevan los headers de `helmet`. **Rate limiting** por IP (`middlewares/rateLimit.middleware.js`, contadores en memoria): `/api/*` 500 peticiones / 15 min; `POST /api/auth/login` 10 intentos **fallidos** / 15 min; `POST /api/auth/register` 10 / hora. Al superarlo: `429 { message }` con headers `RateLimit` y `Retry-After`. Detrás de un proxy hay que fijar `TRUST_PROXY` para que se cuente la IP real.
 
-**Errores:** los centraliza `middlewares/error.middleware.js`. Ruta inexistente → `404 { message }`; JSON malformado → `400`; body de más de 5 MB → `413`; duplicado en índice único de MySQL → `409`; cualquier otro fallo → `500 { message: "Error interno del servidor" }` (fuera de producción incluye además `detail` con el mensaje técnico). El detalle completo solo se escribe en el log del servidor.
+**Errores:** los centraliza `middlewares/error.middleware.js`. Ruta inexistente → `404 { message }`; JSON malformado → `400`; body de más de 5 MB → `413`; duplicado en índice único de MySQL → `409`; cualquier otro fallo → `500 { message: "Error interno del servidor", requestId }` (fuera de producción incluye además `detail` con el mensaje técnico). El detalle completo solo se escribe en el log del servidor.
+
+**Request id:** toda respuesta lleva `X-Request-Id` (expuesto por CORS). Si la petición trae un `X-Request-Id` válido (8–64 caracteres alfanuméricos o `-`) se reutiliza; si no, se genera un UUID. Sirve para encontrar la petición en los logs.
 
 | Método y ruta | Auth | Entrada / respuesta exitosa |
 |---|---|---|

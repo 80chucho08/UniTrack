@@ -13,7 +13,7 @@ Marca `[x]` al terminar cada punto y anota en **Bitácora** lo aprendido o decid
 - [x] **Headers de seguridad** con `helmet`.
 - [x] **Rate limiting** con `express-rate-limit` (estricto en `/api/auth/*`). Pendiente para Fase 1+: contadores en Redis si hay más de una instancia.
 - [x] **Manejo de errores** centralizado (sin stack traces en producción).
-- [ ] **Logs estructurados** con `pino` y id por request.
+- [x] **Logs estructurados** con `pino` y id por request.
 - [ ] **Healthcheck** `GET /api/health` que revise la BD.
 
 ## Fase 1 — Docker en local
@@ -71,3 +71,4 @@ Marca `[x]` al terminar cada punto y anota en **Bitácora** lo aprendido o decid
 - **2026-11-26** — Hecho: validación con zod. Middleware `validate` + esquemas en `validators/`; los controladores ya no validan a mano. Contraseña de 8–72 caracteres (72 es el límite real de bcrypt). Registro muestra el error del servidor. De paso: el horario aceptaba materias ajenas (autorización) y `dotenv` dependía de la carpeta actual. Verificado con 28 peticiones contra el backend local.
 - **2026-11-27** — Hecho: `helmet` y rate limiting (API 500/15 min; login 10 fallidos/15 min; registro 10/hora) con `TRUST_PROXY` configurable. Login y Registro muestran el mensaje del servidor (incluido el 429). Quitado un `console.log` que imprimía el token en la consola del navegador. Verificado: headers presentes, `X-Powered-By` ausente y el intento 11 de login responde 429 con CORS.
 - **2026-11-27** — Hecho: manejo de errores centralizado. `error.middleware.js` (404 JSON, JSON malformado 400, 413, `ER_DUP_ENTRY` 409, 500 genérico) y se quitaron los 30 `try/catch` de los controladores, aprovechando que Express 5 reenvía los errores async. Antes, un JSON malformado recibía la página HTML por defecto de Express (con stack trace fuera de producción), y el horario devolvía `error.message` de MySQL al cliente. `server.js` termina el proceso ante errores fatales. Verificado con la BD caída en modo desarrollo y producción, y con la regresión de validación (28/28).
+- **2026-11-27** — Hecho: logs estructurados con pino + pino-http. Una línea JSON por petición (id, userId, status, tiempo) y nivel según el resultado; los 500 incluyen el stack en el log y `requestId` en la respuesta. Header `X-Request-Id` (reutiliza el del proxy si es válido). Sin bodies ni tokens en los logs (verificado: la contraseña enviada no aparece). `LOG_LEVEL` configurable. En Fase 7 estos JSON son los que leerá Loki.
