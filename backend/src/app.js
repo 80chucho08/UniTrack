@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
 const { apiLimiter } = require("./middlewares/rateLimit.middleware");
+const { notFound, errorHandler } = require("./middlewares/error.middleware");
 const config = require("./config/env");
 const authRoutes = require("./routes/auth.routes");
 const userRoutes = require("./routes/user.routes");
@@ -44,5 +45,9 @@ app.use("/api", gradeRoutes);
 app.get("/", (req, res) => {
   res.json({ message: "UniTrack API funcionando " });
 });
+
+// Siempre al final: primero lo que no coincidió con ninguna ruta, luego los errores
+app.use(notFound);
+app.use(errorHandler);
 
 module.exports = app;

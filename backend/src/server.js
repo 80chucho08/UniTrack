@@ -8,3 +8,16 @@ app.listen(config.port, () => {
 });
 
 bd.testConnection();
+
+// Errores que escaparon de todo (p. ej. una promesa sin await que falla fuera de una
+// petición). El proceso queda en un estado desconocido: se registra y se termina, y
+// quien lo supervisa (nodemon ahora, Docker en la Fase 1) lo vuelve a levantar.
+process.on("unhandledRejection", (reason) => {
+  console.error("Promesa rechazada sin manejar:", reason);
+  process.exit(1);
+});
+
+process.on("uncaughtException", (error) => {
+  console.error("Excepción no capturada:", error);
+  process.exit(1);
+});
