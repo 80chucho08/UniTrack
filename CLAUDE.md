@@ -33,5 +33,5 @@ Cada paquete se ejecuta desde su carpeta (`backend/` o `frontend/`); el `package
 ## Convenciones observadas
 
 - Código, comentarios y mensajes de error al usuario están en español.
-- Respuestas de error del backend: `res.status(N).json({ message })`, con `console.error` en el `catch`.
+- Respuestas de error del backend: `res.status(N).json({ message })` para errores esperados (404, 409…). Los inesperados no se atrapan en el controlador (sin `try/catch`): llegan al `errorHandler` de `middlewares/error.middleware.js`, que los registra y responde 500 sin filtrar detalles en producción.
 - Si cambias un contrato de API, actualiza también `docs/api.md` (y `docs/database.md` si tocas SQL).

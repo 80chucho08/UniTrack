@@ -17,7 +17,7 @@ Los servicios en `src/services/` encapsulan solicitudes para semestres, materias
 
 ## Backend y flujo
 
-`src/server.js` carga y valida la configuración (`config/env.js`), inicia Express (`src/app.js`) y prueba la base de datos. `app.js` instala `helmet`, CORS, el rate limit general de `/api` y JSON (en ese orden), monta rutas bajo `/api` y expone `/` como prueba. Las rutas validan `params`/`body` con zod (`middlewares/validate.middleware.js` + `validators/`) y llaman controladores, que reciben datos ya limpios y delegan SQL a modelos. `config/db.js` exporta el pool compartido.
+`src/server.js` carga y valida la configuración (`config/env.js`), inicia Express (`src/app.js`) y prueba la base de datos. `app.js` instala `helmet`, CORS, el rate limit general de `/api` y JSON (en ese orden), monta rutas bajo `/api` y expone `/` como prueba. Las rutas validan `params`/`body` con zod (`middlewares/validate.middleware.js` + `validators/`) y llaman controladores, que reciben datos ya limpios y delegan SQL a modelos. Los controladores no usan `try/catch`: Express 5 pasa los errores de funciones async a `middlewares/error.middleware.js` (montado al final de `app.js` junto con el 404). `server.js` termina el proceso ante `unhandledRejection`/`uncaughtException`. `config/db.js` exporta el pool compartido.
 
 La autenticación de API usa JWT Bearer: `auth.controller.js` registra/autentica usuarios y `auth.middleware.js` verifica el token, dejando `{ id, email }` en `req.user`. Consulta [`api.md`](api.md) para el contrato observado.
 
