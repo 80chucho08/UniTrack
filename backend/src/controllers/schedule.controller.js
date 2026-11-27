@@ -1,15 +1,10 @@
 const scheduleModel = require("../models/schedule.model");
+const subjectModel = require("../models/subject.model");
 
 const getSubjectsBySemester = async (req, res) => {
     try {
         const userId = req.user.id;
         const { semesterId } = req.params;
-
-        if (!userId || !semesterId) {
-            return res.status(400).json({
-                message: "El id o el id de semester es requerido"
-            });
-        }
 
         const subjects = await scheduleModel.getSubjectsBySemester(userId, semesterId);
         res.json(subjects);
@@ -27,11 +22,12 @@ const getSubjectsBySemester = async (req, res) => {
 const saveScheduleSubject = async (req, res) => {
     try {
         const userId = req.user.id;
-        const { subject_id, day, start_time, end_time, classroom } = req.body;
+        // req.body validado por schemas.createScheduleEntry
+        const { subject_id, day, start_time, end_time = null, classroom = null } = req.body;
 
-        // Validación básica
-        if (!subject_id || !day || !start_time) {
-            return res.status(400).json({ message: "Faltan datos obligatorios para el horario" });
+        // Autorización: solo se puede poner en el horario una materia propia
+        if (!(await subjectModel.subjectBelongsToUser(userId, subject_id))) {
+            return res.status(404).json({ message: "Materia no encontrada" });
         }
 
         const result = await scheduleModel.saveScheduleSubject({

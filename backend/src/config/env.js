@@ -1,7 +1,11 @@
 // Configuración central de la app. Es el ÚNICO lugar que lee process.env:
 // el resto del código importa este objeto. Si falta una variable obligatoria,
 // la app no arranca (falla rápido en vez de fallar a medias en producción).
-require("dotenv").config();
+const path = require("path");
+
+// Carga backend/.env sin importar desde qué carpeta se ejecute node.
+// (En Docker/producción las variables llegan del entorno y este archivo puede no existir.)
+require("dotenv").config({ path: path.resolve(__dirname, "../../.env"), quiet: true });
 
 const required = ["DB_HOST", "DB_USER", "DB_NAME", "JWT_SECRET"];
 const missing = required.filter((name) => !process.env[name]);

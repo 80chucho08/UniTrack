@@ -2,15 +2,7 @@ const semesterModel = require("../models/semester.model");
 
 const getSemesters = async (req, res) => {
     try {
-        const { id } = req.user; // Esto saca la propiedad 'id' de req.user
-        const userId = id;
-
-        if (!userId) {
-            return res.status(400).json({
-                message: "El id del usuairo es requerido"
-            });
-        }
-
+        const userId = req.user.id;
         const semesters = await semesterModel.getSemestersByUser(userId);
 
         res.status(200).json(semesters);
@@ -22,15 +14,8 @@ const getSemesters = async (req, res) => {
 
 const createSemester = async (req, res) => {
     try {
-        const { id } = req.user; // Esto saca la propiedad 'id' de req.user
-        const userId = id;
-        const { name, period } = req.body;
-
-        if (!userId || !name || !period) {
-            return res.status(400).json({
-                message: "Faltan datos obligatorios (userId, name o period)"
-            });
-        }
+        const userId = req.user.id;
+        const { name, period } = req.body; // validado por schemas.createSemester
 
         const insertId = await semesterModel.AddSemester(userId, name, period);
 

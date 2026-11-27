@@ -10,13 +10,8 @@ const SALT_ROUNDS = 10;
 
 const register = async (req, res) => {
     try {
+        // req.body ya viene validado y limpio (validators/schemas.js → register)
         const { name, email, password } = req.body;
-
-        if (!name || !email || !password) {
-            return res.status(400).json({
-                message: "Todos lo campos son obligatorios"
-            });
-        }
 
         //verificar si el usuario ya existe
         const usurioExistente = await userModel.getUserByEmail(email);
@@ -30,7 +25,7 @@ const register = async (req, res) => {
         const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
 
         //crear usuario
-        const userId = await userModel.createUser({ name, email, passwordHash });
+        await userModel.createUser({ name, email, passwordHash });
 
         return res.status(201).json({
             message: "Usuario creado correctamente"
@@ -46,12 +41,6 @@ const register = async (req, res) => {
 const login = async (req, res) => {
     try {
         const { email, password } = req.body;
-
-        if (!email || !password) {
-            return res.status(400).json({
-                message: "Email y contraseña son obligatorios"
-            });
-        }
 
         const user = await userModel.getUserByEmail(email);
         if (!user) {

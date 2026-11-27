@@ -15,12 +15,6 @@ const getSubjects = async (req, res) => {
         const userId = req.user.id;
         const { semesterId } = req.params;
 
-        if (!userId || !semesterId) {
-            return res.status(400).json({
-                message: "El id del usuario o el id de semestre es requerido"
-            });
-        }
-
         const subjects = await subjectModel.getSubjects(userId, semesterId);
         res.json(subjects);
     } catch (error) {
@@ -61,16 +55,8 @@ const createSubject = async (req, res) => {
     try {
         const userId = req.user.id;
         const { semesterId } = req.params;
-        if (!userId || !semesterId) {
-            return res.status(400).json({
-                message: "El id del usuario o el id de semestre es requerido"
-            });
-        }
-        const { name } = req.body;
-        if (!name) {
-            return res.status(400).json({ message: "El nombre de la materia es obligatorio" });
-        }
 
+        // req.body validado por schemas.createSubject
         const subjectId = await subjectModel.addSubject(
             userId,
             semesterId,
@@ -98,27 +84,15 @@ const updateSubject = async (req, res) => {
             return res.status(404).json({ message: "Materia no encontrada" });
         }
 
+        // req.body validado por schemas.updateSubject; lo que no viene se conserva
         const body = req.body;
-        const pick = (field) => (field in body ? cleanText(body[field]) : current[field]);
-
-        const name = pick("name");
-        if (!name) {
-            return res.status(400).json({ message: "El nombre de la materia es obligatorio" });
-        }
-
-        let credits = current.credits;
-        if ("credits" in body) {
-            credits = cleanText(body.credits) === null ? null : Number(body.credits);
-            if (credits !== null && (!Number.isInteger(credits) || credits < 0)) {
-                return res.status(400).json({ message: "Los créditos deben ser un número entero positivo" });
-            }
-        }
+        const pick = (field) => (field in body ? body[field] : current[field]);
 
         await subjectModel.updateSubject(userId, subjectId, {
-            name,
+            name: pick("name"),
             teacher_name: pick("teacher_name"),
             teacher_email: pick("teacher_email"),
-            credits,
+            credits: pick("credits"),
             color: pick("color"),
             evaluation_criteria: pick("evaluation_criteria")
         });

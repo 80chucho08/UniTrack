@@ -18,7 +18,7 @@ Cada paquete se ejecuta desde su carpeta (`backend/` o `frontend/`); el `package
 
 ## Arquitectura en pocas líneas
 
-- **Backend** (Express 5, CommonJS): `routes/` → `controllers/` → `models/`. Los controladores sacan el usuario de `req.user` (puesto por `middlewares/auth.middleware.js` a partir del JWT Bearer), validan el body y llaman a modelos que ejecutan SQL crudo con el pool de `config/db.js`. Todas las consultas filtran por `user_id`: mantén ese aislamiento por usuario en cualquier endpoint nuevo.
+- **Backend** (Express 5, CommonJS): `routes/` → `controllers/` → `models/`. Los controladores sacan el usuario de `req.user` (puesto por `middlewares/auth.middleware.js` a partir del JWT Bearer), reciben `req.body`/`req.params` ya validados y limpios por zod (`validate({ params, body })` en la ruta, esquemas en `validators/schemas.js`; endpoint nuevo → esquema nuevo) y llaman a modelos que ejecutan SQL crudo con el pool de `config/db.js`. Todas las consultas filtran por `user_id`: mantén ese aislamiento por usuario en cualquier endpoint nuevo.
 - **Montaje de rutas en `app.js`**: `subject.routes.js` se monta en `/api` (no en `/api/subjects`), por eso sus rutas son `/api/semesters/:semesterId/subjects`. Al añadir rutas, revisa el prefijo con que se monta cada router.
 - **Configuración**: solo `backend/src/config/env.js` lee `process.env`; el resto importa ese objeto. Variable nueva → añádela ahí y en `backend/.env.example`. Roadmap de despliegue y su avance en `docs/roadmap-devops.md`.
 - **CORS** toma los orígenes de `CORS_ORIGIN` con métodos `GET, POST, PUT, DELETE`; un método nuevo (p. ej. `PATCH`) requiere actualizarlo.
